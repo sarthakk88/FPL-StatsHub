@@ -3,240 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FPL StatHub - Fantasy Premier League Statistics</title>
+    <title>FPL StatHub - Real Player Analytics</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
-    <div class="app">
+    <div class="container">
         <!-- Header -->
         <header class="header">
-            <div class="container">
-                <div class="header-content">
-                    <div class="logo">
-                        <h1>FPL StatHub</h1>
-                        <span class="tagline">Fantasy Premier League Statistics</span>
-                    </div>
-                    <nav class="nav-desktop">
-                        <button type="button" class="nav-btn active" data-tab="myteam">My Team</button>
-                        <button type="button" class="nav-btn" data-tab="players">Players</button>
-                        <button type="button" class="nav-btn" data-tab="teams">Teams</button>
-                    </nav>
-                    <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">
-                        <span></span>
-                        <span></span>
-                        <span></span>
+            <div class="header-content">
+                <h1 class="header-title">FPL StatHub</h1>
+                <p class="header-subtitle">Real Fantasy Premier League Analytics</p>
+                <div class="header-meta">
+                    <span class="data-status" id="dataStatus">
+                        <span class="status-dot"></span>
+                        <span id="lastUpdated">Loading...</span>
+                    </span>
+                    <button class="btn btn--secondary btn--sm" id="refreshBtn">
+                        <span id="refreshIcon">↻</span> Refresh Data
                     </button>
                 </div>
-                <nav class="nav-mobile" id="mobileNav">
-                    <button type="button" class="nav-btn active" data-tab="myteam">My Team</button>
-                    <button type="button" class="nav-btn" data-tab="players">Players</button>
-                    <button type="button" class="nav-btn" data-tab="teams">Teams</button>
-                </nav>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="main">
-            <div class="container">
-                <!-- My Team Tab -->
-                <section class="tab-content active" id="myteam">
-                    <div class="page-header">
-                        <h2>My Team Analytics</h2>
-                        <p>Enter your FPL Team ID to view detailed performance statistics</p>
-                    </div>
-                    
-                    <div class="team-input-section">
-                        <div class="card">
-                            <div class="card__body">
-                                <div class="form-group">
-                                    <label class="form-label" for="teamId">FPL Team ID</label>
-                                    <div class="input-group">
-                                        <input type="text" id="teamId" class="form-control" placeholder="Enter your team ID (e.g., 12345)" value="">
-                                        <button type="button" class="btn btn--primary" id="loadTeamBtn">Load Team</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-position="goalkeepers">Goalkeepers</button>
+            <button class="nav-tab" data-position="defenders">Defenders</button>
+            <button class="nav-tab" data-position="midfielders">Midfielders</button>
+            <button class="nav-tab" data-position="attackers">Attackers</button>
+            <button class="nav-tab" data-position="analytics">Analytics</button>
+        </nav>
 
-                    <div class="team-stats" id="teamStats">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-value" id="totalPoints">2,147</div>
-                                <div class="stat-label">Total Points</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="overallRank">15,432</div>
-                                <div class="stat-label">Overall Rank</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="gameweekPoints">78</div>
-                                <div class="stat-label">Gameweek Points</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="teamName">Dream Team FC</div>
-                                <div class="stat-label">Team Name</div>
-                            </div>
-                        </div>
-
-                        <div class="charts-grid">
-                            <div class="chart-card">
-                                <h3>Player Performance</h3>
-                                <div class="chart-container" style="position: relative; height: 300px;">
-                                    <canvas id="playerPerformanceChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="chart-card">
-                                <h3>Captain Success Rate</h3>
-                                <div class="chart-container" style="position: relative; height: 300px;">
-                                    <canvas id="captainChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="team-players-section">
-                            <h3>Current Squad</h3>
-                            <div class="players-grid" id="teamPlayersList">
-                                <!-- Team players will be populated here -->
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Players Tab -->
-                <section class="tab-content" id="players">
-                    <div class="page-header">
-                        <h2>Player Statistics</h2>
-                        <p>Analyze player performance across all positions</p>
-                    </div>
-
-                    <div class="player-filters">
-                        <div class="card">
-                            <div class="card__body">
-                                <div class="filters-grid">
-                                    <div class="form-group">
-                                        <label class="form-label" for="playerSearch">Search Player</label>
-                                        <input type="text" id="playerSearch" class="form-control" placeholder="Search by name...">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="priceRange">Max Price</label>
-                                        <input type="range" id="priceRange" min="4" max="15" step="0.1" value="15" class="form-control">
-                                        <span class="range-value" id="priceValue">£15.0m</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="teamFilter">Team</label>
-                                        <select id="teamFilter" class="form-control">
-                                            <option value="">All Teams</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="position-tabs">
-                        <button type="button" class="position-tab active" data-position="all">All</button>
-                        <button type="button" class="position-tab" data-position="Goalkeeper">Goalkeepers</button>
-                        <button type="button" class="position-tab" data-position="Defender">Defenders</button>
-                        <button type="button" class="position-tab" data-position="Midfielder">Midfielders</button>
-                        <button type="button" class="position-tab" data-position="Forward">Forwards</button>
-                    </div>
-
-                    <div class="players-table-container">
-                        <div class="card">
-                            <div class="table-wrapper">
-                                <table class="players-table" id="playersTable">
-                                    <thead>
-                                        <tr>
-                                            <th class="sortable" data-sort="name">Name</th>
-                                            <th class="sortable" data-sort="position">Position</th>
-                                            <th class="sortable" data-sort="team">Team</th>
-                                            <th class="sortable" data-sort="price">Price</th>
-                                            <th class="sortable" data-sort="points">Points</th>
-                                            <th class="sortable" data-sort="form">Form</th>
-                                            <th class="sortable" data-sort="ownership">Ownership</th>
-                                            <th class="sortable" data-sort="xG">xG</th>
-                                            <th class="sortable" data-sort="xA">xA</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="playersTableBody">
-                                        <!-- Players will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Teams Tab -->
-                <section class="tab-content" id="teams">
-                    <div class="page-header">
-                        <h2>Team Statistics</h2>
-                        <p>Compare Premier League team performance and statistics</p>
-                    </div>
-
-                    <div class="team-filters">
-                        <div class="card">
-                            <div class="card__body">
-                                <div class="filters-grid">
-                                    <div class="form-group">
-                                        <label class="form-label" for="teamSort">Sort By</label>
-                                        <select id="teamSort" class="form-control">
-                                            <option value="position">League Position</option>
-                                            <option value="points">Points</option>
-                                            <option value="goals_for">Goals For</option>
-                                            <option value="goals_against">Goals Against</option>
-                                            <option value="clean_sheets">Clean Sheets</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="teams-grid" id="teamsGrid">
-                        <!-- Teams will be populated here -->
-                    </div>
-
-                    <div class="teams-charts">
-                        <div class="charts-grid">
-                            <div class="chart-card">
-                                <h3>Goals Scored vs Conceded</h3>
-                                <div class="chart-container" style="position: relative; height: 400px;">
-                                    <canvas id="goalsChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="chart-card">
-                                <h3>Expected Goals (xG vs xGA)</h3>
-                                <div class="chart-container" style="position: relative; height: 400px;">
-                                    <canvas id="xgChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-
-        <!-- Player Detail Modal -->
-        <div class="modal hidden" id="playerModal">
-            <div class="modal-overlay" id="modalOverlay"></div>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="modalPlayerName"></h3>
-                    <button type="button" class="modal-close" id="modalClose">&times;</button>
+        <!-- Filters Panel -->
+        <div class="filters-panel">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="form-label">Min Minutes</label>
+                    <input type="range" id="minutesFilter" min="0" max="3000" value="500" class="range-input">
+                    <span class="range-value" id="minutesValue">500</span>
                 </div>
-                <div class="modal-body" id="modalBody">
-                    <!-- Player details will be populated here -->
+                <div class="filter-group">
+                    <label class="form-label">Form Rating</label>
+                    <input type="range" id="formFilter" min="0" max="10" value="0" step="0.1" class="range-input">
+                    <span class="range-value" id="formValue">0.0+</span>
+                </div>
+                <div class="filter-group">
+                    <label class="form-label">xPoints Range</label>
+                    <input type="range" id="xPointsFilter" min="0" max="15" value="0" step="0.1" class="range-input">
+                    <span class="range-value" id="xPointsValue">0.0+</span>
+                </div>
+                <div class="filter-group">
+                    <label class="form-label">Performance</label>
+                    <select id="performanceFilter" class="form-control">
+                        <option value="all">All Games</option>
+                        <option value="home">Home Only</option>
+                        <option value="away">Away Only</option>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <!-- Loading Spinner -->
-        <div class="loading-spinner hidden" id="loadingSpinner">
-            <div class="spinner"></div>
-            <p>Loading...</p>
+        <!-- Player Stats Tables -->
+        <div class="tab-content">
+            <!-- Goalkeepers -->
+            <div class="tab-pane active" id="goalkeepers">
+                <div class="table-container">
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="name">Player</th>
+                                <th data-sort="minutes">Minutes</th>
+                                <th data-sort="xGC">xGC</th>
+                                <th data-sort="total_points">Points</th>
+                                <th data-sort="xPoints">xPoints</th>
+                                <th data-sort="clean_sheets">Clean Sheets</th>
+                                <th data-sort="saves">Saves</th>
+                                <th data-sort="form">Form</th>
+                                <th data-sort="team_against">Next Fixture</th>
+                                <th data-sort="diff">Difficulty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="goalkeepersTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Defenders -->
+            <div class="tab-pane" id="defenders">
+                <div class="table-container">
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="name">Player</th>
+                                <th data-sort="minutes">Minutes</th>
+                                <th data-sort="xG">xG</th>
+                                <th data-sort="xA">xA</th>
+                                <th data-sort="xGC">xGC</th>
+                                <th data-sort="total_points">Points</th>
+                                <th data-sort="xPoints">xPoints</th>
+                                <th data-sort="clean_sheets">Clean Sheets</th>
+                                <th data-sort="form">Form</th>
+                                <th data-sort="team_against">Next Fixture</th>
+                                <th data-sort="diff">Difficulty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="defendersTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Midfielders -->
+            <div class="tab-pane" id="midfielders">
+                <div class="table-container">
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="name">Player</th>
+                                <th data-sort="minutes">Minutes</th>
+                                <th data-sort="xG">xG</th>
+                                <th data-sort="xA">xA</th>
+                                <th data-sort="total_points">Points</th>
+                                <th data-sort="xPoints">xPoints</th>
+                                <th data-sort="goal_scored">Goals</th>
+                                <th data-sort="assists">Assists</th>
+                                <th data-sort="form">Form</th>
+                                <th data-sort="team_against">Next Fixture</th>
+                                <th data-sort="diff">Difficulty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="midfieldersTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Attackers -->
+            <div class="tab-pane" id="attackers">
+                <div class="table-container">
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="name">Player</th>
+                                <th data-sort="minutes">Minutes</th>
+                                <th data-sort="xG">xG</th>
+                                <th data-sort="xA">xA</th>
+                                <th data-sort="total_points">Points</th>
+                                <th data-sort="xPoints">xPoints</th>
+                                <th data-sort="goal_scored">Goals</th>
+                                <th data-sort="assists">Assists</th>
+                                <th data-sort="form">Form</th>
+                                <th data-sort="team_against">Next Fixture</th>
+                                <th data-sort="diff">Difficulty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attackersTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Analytics -->
+            <div class="tab-pane" id="analytics">
+                <div class="analytics-grid">
+                    <div class="chart-card">
+                        <h3>xG vs xA Correlation</h3>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="xgXaChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Form Distribution</h3>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="formChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>xPoints vs Actual Points</h3>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="pointsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Home vs Away Performance</h3>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="homeAwayChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home/Away Toggle -->
+        <div class="performance-toggle">
+            <div class="toggle-buttons">
+                <button class="toggle-btn active" data-mode="overall">Overall Stats</button>
+                <button class="toggle-btn" data-mode="home">Home Stats</button>
+                <button class="toggle-btn" data-mode="away">Away Stats</button>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay hidden" id="loadingOverlay">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p>Loading FPL data...</p>
+            </div>
         </div>
     </div>
 
