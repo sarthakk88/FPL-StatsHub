@@ -2,87 +2,159 @@
 
 class FPLStatHub {
     constructor() {
-        this.data = {
-            goalkeepers: [],
-            defenders: [],
-            midfielders: [],
-            attackers: [],
-            metadata: {}
-        };
-        
-        this.currentPosition = 'goalkeepers';
-        this.currentSort = { column: null, direction: 'desc' };
+        this.data = this.initializeData();
+        this.currentMainTab = 'my-team';
+        this.currentPlayerPosition = 'goalkeepers';
         this.filters = {
             minutes: 500,
             form: 0,
             xPoints: 0,
-            performance: 'all'
+            venue: 'all'
         };
-        this.performanceMode = 'overall';
+        this.currentSort = { column: null, direction: 'desc' };
+        this.charts = {};
         
         this.init();
     }
 
-    init() {
-        this.loadSampleData();
-        this.setupEventListeners();
-        this.renderCurrentTab();
-        this.updateLastUpdated();
-    }
-
-    loadSampleData() {
-        // Sample data from the provided JSON
-        this.data = {
+    initializeData() {
+        // Expanded data based on provided JSON
+        return {
+            myTeam: {
+                team_name: "Dream Team FC",
+                totalPoints: 2134,
+                rank: 15872,
+                gameweekPoints: 72,
+                lastUpdated: "2025-08-01T16:00:00Z",
+                players: [
+                    {"name":"Alisson","position":"GK","opponent":"ARS (H)","xPoints":5.1,"form":5.2,"captain":false,"total_points":6},
+                    {"name":"Trent Alexander-Arnold","position":"DEF","opponent":"CHE (H)","xPoints":6.4,"form":6.8,"captain":false,"total_points":8},
+                    {"name":"Virgil van Dijk","position":"DEF","opponent":"CHE (H)","xPoints":5.5,"form":6.2,"captain":false,"total_points":7},
+                    {"name":"John Stones","position":"DEF","opponent":"BUR (H)","xPoints":5.0,"form":5.1,"captain":false,"total_points":4},
+                    {"name":"Pervis Estupiñán","position":"DEF","opponent":"WHU (A)","xPoints":4.9,"form":4.6,"captain":false,"total_points":5},
+                    {"name":"Bukayo Saka","position":"MID","opponent":"MCI (A)","xPoints":6.9,"form":7.5,"captain":false,"total_points":10},
+                    {"name":"Mohamed Salah","position":"MID","opponent":"CHE (H)","xPoints":8.2,"form":8.1,"captain":true,"total_points":12},
+                    {"name":"Kevin De Bruyne","position":"MID","opponent":"BUR (H)","xPoints":7.6,"form":7.4,"captain":false,"total_points":9},
+                    {"name":"Phil Foden","position":"MID","opponent":"BUR (H)","xPoints":6.1,"form":6.0,"captain":false,"total_points":6},
+                    {"name":"James Maddison","position":"MID","opponent":"WOL (H)","xPoints":5.7,"form":5.9,"captain":false,"total_points":5},
+                    {"name":"Erling Haaland","position":"FWD","opponent":"BUR (H)","xPoints":9.6,"form":8.7,"captain":false,"total_points":11},
+                    {"name":"Harry Kane","position":"FWD","opponent":"NEW (A)","xPoints":8.5,"form":7.5,"captain":false,"total_points":9},
+                    {"name":"Ollie Watkins","position":"FWD","opponent":"FUL (A)","xPoints":6.2,"form":6.0,"captain":false,"total_points":7},
+                    {"name":"Jordan Pickford","position":"GK","opponent":"MCI (A)","xPoints":4.4,"form":4.8,"captain":false,"total_points":3},
+                    {"name":"Yoane Wissa","position":"FWD","opponent":"SOU (A)","xPoints":4.5,"form":4.4,"captain":false,"total_points":2}
+                ]
+            },
             goalkeepers: [
-                {"first_name": "Alisson", "second_name": "Ramses Becker", "id": 1, "minutes": 2880, "xGC": 1.12, "total_points": 4.5, "xPoints": 4.8, "Home/Away_minutes": 1440, "total_points_Home/Away": 4.8, "xPoints_Home/Away": 5.1, "clean_sheets": 0.45, "goals_conceded": 1.05, "bonus": 0.15, "saves": 2.8, "form": 5.2, "diff": -0.3, "team_against": "Arsenal", "Home/Away": "Home"},
-                {"first_name": "Jordan", "second_name": "Pickford", "id": 2, "minutes": 2790, "xGC": 1.35, "total_points": 3.9, "xPoints": 4.2, "Home/Away_minutes": 1395, "total_points_Home/Away": 4.1, "xPoints_Home/Away": 4.4, "clean_sheets": 0.32, "goals_conceded": 1.28, "bonus": 0.08, "saves": 3.2, "form": 4.8, "diff": 0.2, "team_against": "Manchester City", "Home/Away": "Away"}
+                {"name":"Alisson","team":"Liverpool","price":5.6,"points":142,"form":5.2,"xG":0.0,"xA":0.0,"xPoints":4.8,"minutes":3240,"opponent":"Arsenal","homeAway":"H","cleanSheets":18,"saves":95,"xGC":28.5},
+                {"name":"Jordan Pickford","team":"Everton","price":5.0,"points":138,"form":4.8,"xG":0.0,"xA":0.0,"xPoints":4.2,"minutes":3150,"opponent":"Man City","homeAway":"A","cleanSheets":12,"saves":108,"xGC":45.2},
+                {"name":"Aaron Ramsdale","team":"Arsenal","price":5.2,"points":135,"form":5.0,"xG":0.0,"xA":0.0,"xPoints":4.6,"minutes":2880,"opponent":"Liverpool","homeAway":"A","cleanSheets":14,"saves":89,"xGC":35.1},
+                {"name":"Nick Pope","team":"Newcastle","price":5.1,"points":140,"form":5.3,"xG":0.0,"xA":0.0,"xPoints":4.9,"minutes":3060,"opponent":"Brighton","homeAway":"H","cleanSheets":16,"saves":102,"xGC":32.8},
+                {"name":"José Sá","team":"Wolves","price":4.8,"points":125,"form":4.5,"xG":0.0,"xA":0.0,"xPoints":4.1,"minutes":2970,"opponent":"Tottenham","homeAway":"A","cleanSheets":10,"saves":115,"xGC":42.3},
+                {"name":"Kepa Arrizabalaga","team":"Chelsea","price":5.3,"points":118,"form":4.2,"xG":0.0,"xA":0.0,"xPoints":3.9,"minutes":2520,"opponent":"Liverpool","homeAway":"A","cleanSheets":9,"saves":92,"xGC":38.7}
             ],
             defenders: [
-                {"first_name": "Virgil", "second_name": "van Dijk", "id": 3, "minutes": 3150, "xG": 0.12, "xA": 0.08, "xGC": 0.89, "total_points": 5.1, "xPoints": 5.4, "Home/Away_minutes": 1575, "total_points_Home/Away": 5.3, "xPoints_Home/Away": 5.6, "goal_scored": 0.11, "assists": 0.06, "clean_sheets": 0.52, "goals_conceded": 0.86, "bonus": 0.18, "form": 6.2, "diff": -0.5, "team_against": "Chelsea", "Home/Away": "Home"},
-                {"first_name": "Trent", "second_name": "Alexander-Arnold", "id": 4, "minutes": 2970, "xG": 0.08, "xA": 0.31, "xGC": 0.92, "total_points": 5.8, "xPoints": 6.1, "Home/Away_minutes": 1485, "total_points_Home/Away": 6.2, "xPoints_Home/Away": 6.5, "goal_scored": 0.06, "assists": 0.27, "clean_sheets": 0.49, "goals_conceded": 0.89, "bonus": 0.22, "form": 6.8, "diff": -0.5, "team_against": "Chelsea", "Home/Away": "Home"}
+                {"name":"Trent Alexander-Arnold","team":"Liverpool","price":7.1,"points":158,"form":6.8,"xG":0.07,"xA":0.29,"xPoints":6.4,"minutes":2876,"opponent":"Arsenal","homeAway":"H","cleanSheets":14,"goals":2,"assists":8},
+                {"name":"Virgil van Dijk","team":"Liverpool","price":6.2,"points":134,"form":6.2,"xG":0.09,"xA":0.04,"xPoints":5.5,"minutes":3298,"opponent":"Arsenal","homeAway":"H","cleanSheets":16,"goals":3,"assists":1},
+                {"name":"John Stones","team":"Man City","price":5.8,"points":125,"form":5.1,"xG":0.05,"xA":0.02,"xPoints":5.0,"minutes":2654,"opponent":"Burnley","homeAway":"H","cleanSheets":19,"goals":1,"assists":2},
+                {"name":"William Saliba","team":"Arsenal","price":5.9,"points":142,"form":6.1,"xG":0.08,"xA":0.03,"xPoints":5.8,"minutes":3150,"opponent":"Liverpool","homeAway":"A","cleanSheets":15,"goals":2,"assists":1},
+                {"name":"Kieran Trippier","team":"Newcastle","price":6.8,"points":145,"form":6.5,"xG":0.04,"xA":0.22,"xPoints":6.1,"minutes":2734,"opponent":"Brighton","homeAway":"H","cleanSheets":12,"goals":1,"assists":6},
+                {"name":"Reece James","team":"Chelsea","price":6.5,"points":128,"form":5.8,"xG":0.06,"xA":0.18,"xPoints":5.9,"minutes":2456,"opponent":"Liverpool","homeAway":"A","cleanSheets":11,"goals":2,"assists":5},
+                {"name":"Kyle Walker","team":"Man City","price":6.0,"points":132,"form":5.9,"xG":0.02,"xA":0.08,"xPoints":5.2,"minutes":2876,"opponent":"Burnley","homeAway":"H","cleanSheets":18,"goals":0,"assists":3},
+                {"name":"Gabriel Magalhães","team":"Arsenal","price":5.7,"points":139,"form":6.0,"xG":0.11,"xA":0.02,"xPoints":5.6,"minutes":3015,"opponent":"Liverpool","homeAway":"A","cleanSheets":14,"goals":4,"assists":0}
             ],
             midfielders: [
-                {"first_name": "Mohamed", "second_name": "Salah", "id": 5, "minutes": 3060, "xG": 0.68, "xA": 0.41, "xGC": 0.95, "total_points": 7.2, "xPoints": 7.8, "Home/Away_minutes": 1530, "total_points_Home/Away": 7.6, "xPoints_Home/Away": 8.2, "goal_scored": 0.62, "assists": 0.35, "clean_sheets": 0.21, "goals_conceded": 0.92, "bonus": 0.31, "form": 8.1, "diff": -0.5, "team_against": "Chelsea", "Home/Away": "Home"},
-                {"first_name": "Kevin", "second_name": "De Bruyne", "id": 6, "minutes": 2520, "xG": 0.29, "xA": 0.67, "xGC": 0.78, "total_points": 6.8, "xPoints": 7.3, "Home/Away_minutes": 1260, "total_points_Home/Away": 7.1, "xPoints_Home/Away": 7.6, "goal_scored": 0.25, "assists": 0.61, "clean_sheets": 0.28, "goals_conceded": 0.75, "bonus": 0.35, "form": 7.4, "diff": 0.8, "team_against": "Burnley", "Home/Away": "Home"}
+                {"name":"Mohamed Salah","team":"Liverpool","price":13.1,"points":187,"form":8.1,"xG":0.67,"xA":0.43,"xPoints":8.2,"minutes":3104,"opponent":"Arsenal","homeAway":"H","goals":18,"assists":12},
+                {"name":"Kevin De Bruyne","team":"Man City","price":9.8,"points":156,"form":7.4,"xG":0.31,"xA":0.58,"xPoints":7.6,"minutes":2387,"opponent":"Burnley","homeAway":"H","goals":7,"assists":16},
+                {"name":"Bukayo Saka","team":"Arsenal","price":8.9,"points":171,"form":7.5,"xG":0.34,"xA":0.41,"xPoints":6.9,"minutes":2987,"opponent":"Liverpool","homeAway":"A","goals":9,"assists":11},
+                {"name":"Phil Foden","team":"Man City","price":8.2,"points":149,"form":6.0,"xG":0.45,"xA":0.28,"xPoints":6.1,"minutes":2543,"opponent":"Burnley","homeAway":"H","goals":11,"assists":8},
+                {"name":"James Maddison","team":"Tottenham","price":7.8,"points":134,"form":5.9,"xG":0.38,"xA":0.35,"xPoints":5.7,"minutes":2456,"opponent":"Wolves","homeAway":"H","goals":8,"assists":9},
+                {"name":"Bruno Fernandes","team":"Man United","price":8.5,"points":152,"form":6.7,"xG":0.42,"xA":0.33,"xPoints":6.5,"minutes":2734,"opponent":"Sheffield Utd","homeAway":"H","goals":10,"assists":8},
+                {"name":"Martin Ødegaard","team":"Arsenal","price":8.1,"points":148,"form":6.4,"xG":0.29,"xA":0.38,"xPoints":6.2,"minutes":2658,"opponent":"Liverpool","homeAway":"A","goals":6,"assists":12},
+                {"name":"Jarrod Bowen","team":"West Ham","price":7.5,"points":138,"form":6.1,"xG":0.35,"xA":0.25,"xPoints":5.8,"minutes":2876,"opponent":"Brighton","homeAway":"A","goals":9,"assists":7}
             ],
             attackers: [
-                {"first_name": "Erling", "second_name": "Haaland", "id": 7, "minutes": 2880, "xG": 0.89, "xA": 0.15, "total_points": 8.9, "xPoints": 9.2, "Home/Away_minutes": 1440, "total_points_Home/Away": 9.3, "xPoints_Home/Away": 9.6, "goal_scored": 0.85, "assists": 0.12, "bonus": 0.41, "form": 8.7, "diff": 0.8, "team_against": "Burnley", "Home/Away": "Home"},
-                {"first_name": "Harry", "second_name": "Kane", "id": 8, "minutes": 2970, "xG": 0.74, "xA": 0.23, "total_points": 7.8, "xPoints": 8.1, "Home/Away_minutes": 1485, "total_points_Home/Away": 8.2, "xPoints_Home/Away": 8.5, "goal_scored": 0.69, "assists": 0.19, "bonus": 0.28, "form": 7.5, "diff": 0.1, "team_against": "Newcastle", "Home/Away": "Away"}
+                {"name":"Erling Haaland","team":"Man City","price":15.0,"points":195,"form":8.7,"xG":0.89,"xA":0.12,"xPoints":9.6,"minutes":2847,"opponent":"Burnley","homeAway":"H","goals":24,"assists":3},
+                {"name":"Harry Kane","team":"Tottenham","price":11.5,"points":168,"form":7.5,"xG":0.74,"xA":0.21,"xPoints":8.5,"minutes":2654,"opponent":"Wolves","homeAway":"H","goals":21,"assists":6},
+                {"name":"Ollie Watkins","team":"Aston Villa","price":9.2,"points":145,"form":6.0,"xG":0.52,"xA":0.18,"xPoints":6.2,"minutes":2734,"opponent":"Fulham","homeAway":"A","goals":14,"assists":5},
+                {"name":"Darwin Núñez","team":"Liverpool","price":8.8,"points":132,"form":5.8,"xG":0.61,"xA":0.15,"xPoints":6.0,"minutes":2456,"opponent":"Arsenal","homeAway":"H","goals":13,"assists":4},
+                {"name":"Yoane Wissa","team":"Brentford","price":6.1,"points":118,"form":4.4,"xG":0.41,"xA":0.08,"xPoints":4.5,"minutes":2187,"opponent":"Southampton","homeAway":"A","goals":10,"assists":2},
+                {"name":"Ivan Toney","team":"Brentford","price":7.2,"points":141,"form":6.3,"xG":0.58,"xA":0.14,"xPoints":6.1,"minutes":2543,"opponent":"Southampton","homeAway":"A","goals":15,"assists":4},
+                {"name":"Callum Wilson","team":"Newcastle","price":7.8,"points":128,"form":5.7,"xG":0.64,"xA":0.11,"xPoints":5.9,"minutes":2298,"opponent":"Brighton","homeAway":"H","goals":12,"assists":3},
+                {"name":"Alexander Isak","team":"Newcastle","price":8.5,"points":136,"form":6.1,"xG":0.59,"xA":0.13,"xPoints":6.0,"minutes":2456,"opponent":"Brighton","homeAway":"H","goals":13,"assists":3}
             ],
-            metadata: {
-                lastUpdated: "2025-08-01T16:00:00Z",
-                gameweek: 20,
-                dataSource: "FPL API via Python Client",
-                minutesThreshold: 60,
-                matchesAnalyzed: 5
-            }
+            teams: [
+                {"name":"Manchester City","goals_for":89,"goals_against":31,"xG":85.2,"xGA":29.8,"clean_sheets":18,"position":1,"points":91},
+                {"name":"Arsenal","goals_for":84,"goals_against":43,"xG":79.6,"xGA":41.2,"clean_sheets":15,"position":2,"points":84},
+                {"name":"Liverpool","goals_for":86,"goals_against":41,"xG":82.1,"xGA":38.9,"clean_sheets":16,"position":3,"points":82},
+                {"name":"Newcastle United","goals_for":68,"goals_against":56,"xG":64.3,"xGA":52.7,"clean_sheets":11,"position":4,"points":71},
+                {"name":"Manchester United","goals_for":58,"goals_against":57,"xG":61.4,"xGA":54.8,"clean_sheets":9,"position":5,"points":66},
+                {"name":"Chelsea","goals_for":55,"goals_against":49,"xG":60.2,"xGA":48.3,"clean_sheets":10,"position":6,"points":64},
+                {"name":"Tottenham","goals_for":70,"goals_against":63,"xG":68.5,"xGA":58.2,"clean_sheets":8,"position":7,"points":60},
+                {"name":"Brighton","goals_for":52,"goals_against":54,"xG":58.7,"xGA":52.1,"clean_sheets":9,"position":8,"points":58},
+                {"name":"Aston Villa","goals_for":61,"goals_against":58,"xG":56.8,"xGA":55.3,"clean_sheets":7,"position":9,"points":55},
+                {"name":"West Ham","goals_for":48,"goals_against":62,"xG":52.3,"xGA":59.1,"clean_sheets":6,"position":10,"points":52},
+                {"name":"Brentford","goals_for":54,"goals_against":61,"xG":51.2,"xGA":58.7,"clean_sheets":8,"position":11,"points":49},
+                {"name":"Fulham","goals_for":50,"goals_against":59,"xG":49.8,"xGA":56.4,"clean_sheets":7,"position":12,"points":47},
+                {"name":"Crystal Palace","goals_for":40,"goals_against":56,"xG":45.7,"xGA":54.2,"clean_sheets":6,"position":13,"points":45},
+                {"name":"Wolves","goals_for":38,"goals_against":58,"xG":43.1,"xGA":55.9,"clean_sheets":5,"position":14,"points":42},
+                {"name":"Everton","goals_for":34,"goals_against":57,"xG":41.2,"xGA":56.8,"clean_sheets":4,"position":15,"points":39},
+                {"name":"Nottingham Forest","goals_for":36,"goals_against":64,"xG":39.8,"xGA":61.3,"clean_sheets":3,"position":16,"points":38},
+                {"name":"Luton Town","goals_for":35,"goals_against":65,"xG":38.4,"xGA":62.1,"clean_sheets":4,"position":17,"points":35},
+                {"name":"Burnley","goals_for":32,"goals_against":68,"xG":36.2,"xGA":64.5,"clean_sheets":2,"position":18,"points":32},
+                {"name":"Sheffield United","goals_for":28,"goals_against":78,"xG":33.1,"xGA":71.2,"clean_sheets":1,"position":19,"points":28},
+                {"name":"Southampton","goals_for":31,"goals_against":75,"xG":35.6,"xGA":69.8,"clean_sheets":2,"position":20,"points":25}
+            ]
         };
     }
 
+    init() {
+        this.setupEventListeners();
+        this.renderCurrentTab();
+    }
+
     setupEventListeners() {
-        // Tab navigation
-        document.querySelectorAll('.nav-tab').forEach(tab => {
+        // Main tab navigation
+        document.querySelectorAll('.main-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
-                const position = e.target.dataset.position;
-                this.switchTab(position);
+                this.switchMainTab(e.target.dataset.tab);
             });
         });
 
-        // Table sorting
+        // Load team button
+        const loadTeamBtn = document.getElementById('loadTeamBtn');
+        if (loadTeamBtn) {
+            loadTeamBtn.addEventListener('click', () => {
+                this.loadMyTeamData();
+            });
+        }
+
+        // Filters
+        this.setupFilters();
+
+        // Table sorting - use event delegation
         document.addEventListener('click', (e) => {
-            if (e.target.matches('[data-sort]')) {
-                const column = e.target.dataset.sort;
-                this.sortTable(column);
+            if (e.target.hasAttribute('data-sort')) {
+                this.sortTable(e.target.dataset.sort);
             }
         });
 
-        // Filters
+        // Player sub-tabs - use event delegation  
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('sub-tab')) {
+                this.switchPlayerPosition(e.target.dataset.position);
+            }
+        });
+    }
+
+    setupFilters() {
         const minutesFilter = document.getElementById('minutesFilter');
         if (minutesFilter) {
             minutesFilter.addEventListener('input', (e) => {
                 this.filters.minutes = parseInt(e.target.value);
                 document.getElementById('minutesValue').textContent = e.target.value;
-                this.renderCurrentTab();
+                if (this.currentMainTab === 'players') {
+                    this.renderPlayersContent();
+                }
             });
         }
 
@@ -91,7 +163,9 @@ class FPLStatHub {
             formFilter.addEventListener('input', (e) => {
                 this.filters.form = parseFloat(e.target.value);
                 document.getElementById('formValue').textContent = e.target.value + '+';
-                this.renderCurrentTab();
+                if (this.currentMainTab === 'players') {
+                    this.renderPlayersContent();
+                }
             });
         }
 
@@ -100,78 +174,373 @@ class FPLStatHub {
             xPointsFilter.addEventListener('input', (e) => {
                 this.filters.xPoints = parseFloat(e.target.value);
                 document.getElementById('xPointsValue').textContent = e.target.value + '+';
-                this.renderCurrentTab();
+                if (this.currentMainTab === 'players') {
+                    this.renderPlayersContent();
+                }
             });
         }
 
-        const performanceFilter = document.getElementById('performanceFilter');
-        if (performanceFilter) {
-            performanceFilter.addEventListener('change', (e) => {
-                this.filters.performance = e.target.value;
-                this.renderCurrentTab();
-            });
-        }
-
-        // Performance mode toggle
-        document.querySelectorAll('.toggle-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const mode = e.target.dataset.mode;
-                this.setPerformanceMode(mode);
-            });
-        });
-
-        // Refresh button
-        const refreshBtn = document.getElementById('refreshBtn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                this.refreshData();
+        const venueFilter = document.getElementById('venueFilter');
+        if (venueFilter) {
+            venueFilter.addEventListener('change', (e) => {
+                this.filters.venue = e.target.value;
+                if (this.currentMainTab === 'players') {
+                    this.renderPlayersContent();
+                }
             });
         }
     }
 
-    switchTab(position) {
-        // Update active tab
-        document.querySelectorAll('.nav-tab').forEach(tab => {
+    switchMainTab(tabName) {
+        // Update tab buttons
+        document.querySelectorAll('.main-tab').forEach(tab => {
             tab.classList.remove('active');
         });
-        const activeTab = document.querySelector(`[data-position="${position}"]`);
-        if (activeTab) {
-            activeTab.classList.add('active');
-        }
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
 
-        // Update active tab pane
-        document.querySelectorAll('.tab-pane').forEach(pane => {
-            pane.classList.remove('active');
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
         });
+        document.getElementById(tabName).classList.add('active');
+
+        this.currentMainTab = tabName;
+        this.currentSort = { column: null, direction: 'desc' }; // Reset sort
         
-        if (position === 'analytics') {
-            const analyticsPane = document.getElementById('analytics');
-            if (analyticsPane) {
-                analyticsPane.classList.add('active');
-                this.renderAnalytics();
-            }
-        } else {
-            const positionPane = document.getElementById(position);
-            if (positionPane) {
-                positionPane.classList.add('active');
-                this.currentPosition = position;
-                this.currentSort = { column: null, direction: 'desc' }; // Reset sort when switching tabs
-                this.renderCurrentTab();
-            }
+        // Render content for the new tab
+        setTimeout(() => {
+            this.renderCurrentTab();
+        }, 50);
+    }
+
+    switchPlayerPosition(position) {
+        // Update sub-tab buttons
+        document.querySelectorAll('.sub-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-position="${position}"]`).classList.add('active');
+
+        this.currentPlayerPosition = position;
+        this.currentSort = { column: null, direction: 'desc' };
+        this.renderPlayersContent();
+    }
+
+    renderCurrentTab() {
+        if (this.currentMainTab === 'my-team') {
+            this.loadMyTeamData();
+        } else if (this.currentMainTab === 'players') {
+            this.renderPlayersTab();
+        } else if (this.currentMainTab === 'team-stats') {
+            this.renderTeamStats();
         }
     }
 
-    setPerformanceMode(mode) {
-        document.querySelectorAll('.toggle-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        const activeBtn = document.querySelector(`[data-mode="${mode}"]`);
-        if (activeBtn) {
-            activeBtn.classList.add('active');
-        }
+    loadMyTeamData() {
+        // Update summary cards
+        document.getElementById('totalPoints').textContent = this.data.myTeam.totalPoints.toLocaleString();
+        document.getElementById('overallRank').textContent = this.data.myTeam.rank.toLocaleString();
+        document.getElementById('gameweekPoints').textContent = this.data.myTeam.gameweekPoints;
+
+        this.renderMyTeamPlayers();
         
-        this.performanceMode = mode;
-        this.renderCurrentTab();
+        // Delay chart rendering to ensure canvas is visible
+        setTimeout(() => {
+            this.renderTeamPointsChart();
+        }, 100);
+    }
+
+    renderMyTeamPlayers() {
+        const tbody = document.getElementById('teamPlayersTable');
+        if (!tbody) return;
+
+        tbody.innerHTML = this.data.myTeam.players.map(player => {
+            const positionClass = this.getPositionClass(player.position);
+            const formClass = this.getFormClass(player.form);
+            const captainBadge = player.captain ? '<span class="captain-badge">C</span>' : '';
+
+            return `
+                <tr>
+                    <td><span class="player-name">${player.name}</span></td>
+                    <td><span class="position-badge ${positionClass}">${player.position}</span></td>
+                    <td>${player.opponent}</td>
+                    <td>${player.xPoints.toFixed(1)}</td>
+                    <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
+                    <td><strong>${player.total_points}</strong></td>
+                    <td>${captainBadge}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    renderTeamPointsChart() {
+        const ctx = document.getElementById('teamPointsChart');
+        if (!ctx) return;
+
+        // Destroy existing chart if it exists
+        if (this.charts.teamPoints) {
+            this.charts.teamPoints.destroy();
+        }
+
+        const players = this.data.myTeam.players.sort((a, b) => b.total_points - a.total_points);
+        
+        this.charts.teamPoints = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: players.map(p => p.name.split(' ').pop()),
+                datasets: [{
+                    label: 'Points',
+                    data: players.map(p => p.total_points),
+                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545', '#D2BA4C', '#964325', '#944454', '#13343B', '#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Points'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Players'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    renderPlayersTab() {
+        // Create sub-navigation and content for players tab
+        this.renderPlayersContent();
+    }
+
+    renderPlayersContent() {
+        const playersContent = document.getElementById('playersContent');
+        if (!playersContent) return;
+
+        const rawData = this.data[this.currentPlayerPosition] || [];
+        const filteredData = this.filterPlayerData(rawData);
+        const sortedData = this.sortData(filteredData);
+
+        const tableHTML = this.generatePlayerTable(sortedData);
+        playersContent.innerHTML = tableHTML;
+    }
+
+    generatePlayerTable(data) {
+        if (data.length === 0) {
+            return '<div class="table-container"><p style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">No players match the current filters</p></div>';
+        }
+
+        const headers = this.getTableHeaders(this.currentPlayerPosition);
+        const rows = data.map(player => this.generatePlayerRow(player)).join('');
+
+        return `
+            <div class="table-container">
+                <table class="stats-table">
+                    <thead>
+                        <tr>${headers}</tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    getTableHeaders(position) {
+        const baseHeaders = `
+            <th data-sort="name">Player</th>
+            <th data-sort="team">Team</th>
+            <th data-sort="minutes">Minutes</th>
+        `;
+
+        if (position === 'goalkeepers') {
+            return baseHeaders + `
+                <th data-sort="points">Points</th>
+                <th data-sort="xPoints">xPoints</th>
+                <th data-sort="cleanSheets">Clean Sheets</th>
+                <th data-sort="saves">Saves</th>
+                <th data-sort="xGC">xGC</th>
+                <th data-sort="form">Form</th>
+                <th data-sort="opponent">Next Fixture</th>
+            `;
+        } else if (position === 'defenders') {
+            return baseHeaders + `
+                <th data-sort="xG">xG</th>
+                <th data-sort="xA">xA</th>
+                <th data-sort="points">Points</th>
+                <th data-sort="xPoints">xPoints</th>
+                <th data-sort="cleanSheets">Clean Sheets</th>
+                <th data-sort="goals">Goals</th>
+                <th data-sort="assists">Assists</th>
+                <th data-sort="form">Form</th>
+                <th data-sort="opponent">Next Fixture</th>
+            `;
+        } else {
+            return baseHeaders + `
+                <th data-sort="xG">xG</th>
+                <th data-sort="xA">xA</th>
+                <th data-sort="points">Points</th>
+                <th data-sort="xPoints">xPoints</th>
+                <th data-sort="goals">Goals</th>
+                <th data-sort="assists">Assists</th>
+                <th data-sort="form">Form</th>
+                <th data-sort="opponent">Next Fixture</th>
+            `;
+        }
+    }
+
+    generatePlayerRow(player) {
+        const formClass = this.getFormClass(player.form);
+        const homeAwayBadge = player.homeAway ? 
+            `<span class="badge badge-${player.homeAway.toLowerCase()}">${player.homeAway}</span>` : '';
+
+        const baseData = `
+            <td><span class="player-name">${player.name}</span></td>
+            <td><span class="team-name">${player.team}</span></td>
+            <td>${player.minutes.toLocaleString()}</td>
+        `;
+
+        if (this.currentPlayerPosition === 'goalkeepers') {
+            return `<tr>${baseData}
+                <td><strong>${player.points}</strong></td>
+                <td>${player.xPoints.toFixed(1)}</td>
+                <td>${player.cleanSheets}</td>
+                <td>${player.saves}</td>
+                <td>${player.xGC.toFixed(1)}</td>
+                <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
+                <td>${player.opponent} ${homeAwayBadge}</td>
+            </tr>`;
+        } else if (this.currentPlayerPosition === 'defenders') {
+            return `<tr>${baseData}
+                <td>${player.xG.toFixed(2)}</td>
+                <td>${player.xA.toFixed(2)}</td>
+                <td><strong>${player.points}</strong></td>
+                <td>${player.xPoints.toFixed(1)}</td>
+                <td>${player.cleanSheets}</td>
+                <td>${player.goals}</td>
+                <td>${player.assists}</td>
+                <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
+                <td>${player.opponent} ${homeAwayBadge}</td>
+            </tr>`;
+        } else {
+            return `<tr>${baseData}
+                <td>${player.xG.toFixed(2)}</td>
+                <td>${player.xA.toFixed(2)}</td>
+                <td><strong>${player.points}</strong></td>
+                <td>${player.xPoints.toFixed(1)}</td>
+                <td>${player.goals}</td>
+                <td>${player.assists}</td>
+                <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
+                <td>${player.opponent} ${homeAwayBadge}</td>
+            </tr>`;
+        }
+    }
+
+    renderTeamStats() {
+        this.renderLeagueTable();
+        
+        // Delay chart rendering to ensure canvas is visible
+        setTimeout(() => {
+            this.renderGoalsChart();
+        }, 100);
+    }
+
+    renderLeagueTable() {
+        const tbody = document.getElementById('leagueTable');
+        if (!tbody) return;
+
+        const teams = [...this.data.teams].sort((a, b) => a.position - b.position);
+
+        tbody.innerHTML = teams.map(team => {
+            const positionClass = this.getLeaguePositionClass(team.position);
+            
+            return `
+                <tr>
+                    <td><span class="league-position ${positionClass}">${team.position}</span></td>
+                    <td><span class="team-name">${team.name}</span></td>
+                    <td><strong>${team.points}</strong></td>
+                    <td>${team.goals_for}</td>
+                    <td>${team.goals_against}</td>
+                    <td>${team.xG.toFixed(1)}</td>
+                    <td>${team.xGA.toFixed(1)}</td>
+                    <td>${team.clean_sheets}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    renderGoalsChart() {
+        const ctx = document.getElementById('goalsChart');
+        if (!ctx) return;
+
+        // Destroy existing chart if it exists
+        if (this.charts.goals) {
+            this.charts.goals.destroy();
+        }
+
+        const teams = this.data.teams.slice(0, 10); // Top 10 teams
+        
+        this.charts.goals = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: teams.map(t => t.name.replace(' United', ' Utd').replace(' City', '')),
+                datasets: [
+                    {
+                        label: 'Goals For',
+                        data: teams.map(t => t.goals_for),
+                        backgroundColor: '#1FB8CD'
+                    },
+                    {
+                        label: 'Goals Against',
+                        data: teams.map(t => t.goals_against),
+                        backgroundColor: '#B4413C'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Goals'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Teams'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    filterPlayerData(data) {
+        return data.filter(player => {
+            return player.minutes >= this.filters.minutes &&
+                   player.form >= this.filters.form &&
+                   player.xPoints >= this.filters.xPoints;
+        });
     }
 
     sortTable(column) {
@@ -192,19 +561,11 @@ class FPLStatHub {
             currentTh.classList.add(`sort-${this.currentSort.direction}`);
         }
 
-        this.renderCurrentTab();
-    }
-
-    filterData(data) {
-        return data.filter(player => {
-            const minutes = this.performanceMode === 'home' ? (player['Home/Away_minutes'] || player.minutes / 2) :
-                           this.performanceMode === 'away' ? (player['Home/Away_minutes'] || player.minutes / 2) :
-                           player.minutes;
-            
-            return minutes >= this.filters.minutes &&
-                   player.form >= this.filters.form &&
-                   player.xPoints >= this.filters.xPoints;
-        });
+        if (this.currentMainTab === 'players') {
+            this.renderPlayersContent();
+        } else if (this.currentMainTab === 'team-stats') {
+            this.renderLeagueTable();
+        }
     }
 
     sortData(data) {
@@ -214,17 +575,11 @@ class FPLStatHub {
             let aVal = a[this.currentSort.column];
             let bVal = b[this.currentSort.column];
 
-            if (this.currentSort.column === 'name') {
-                aVal = `${a.first_name} ${a.second_name}`;
-                bVal = `${b.first_name} ${b.second_name}`;
-            }
-
             if (typeof aVal === 'string') {
                 return this.currentSort.direction === 'asc' ? 
                     aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
             }
 
-            // Handle undefined/null values
             if (aVal === undefined || aVal === null) aVal = 0;
             if (bVal === undefined || bVal === null) bVal = 0;
 
@@ -232,132 +587,14 @@ class FPLStatHub {
         });
     }
 
-    renderCurrentTab() {
-        if (this.currentPosition === 'analytics') return;
-
-        const rawData = this.data[this.currentPosition] || [];
-        const filteredData = this.filterData(rawData);
-        const sortedData = this.sortData(filteredData);
-
-        const tbody = document.getElementById(`${this.currentPosition}Table`);
-        if (!tbody) return;
-
-        if (sortedData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--color-text-secondary);">No players match the current filters</td></tr>';
-            return;
+    getPositionClass(position) {
+        switch(position) {
+            case 'GK': return 'gk';
+            case 'DEF': return 'def';
+            case 'MID': return 'mid';
+            case 'FWD': return 'fwd';
+            default: return '';
         }
-
-        tbody.innerHTML = sortedData.map(player => {
-            return this.renderPlayerRow(player);
-        }).join('');
-    }
-
-    renderPlayerRow(player) {
-        const name = `${player.first_name} ${player.second_name}`;
-        const difficultyClass = this.getDifficultyClass(player.diff);
-        const formClass = this.getFormClass(player.form);
-        const homeAwayBadge = player['Home/Away'] ? 
-            `<span class="badge badge-${player['Home/Away'].toLowerCase()}">${player['Home/Away']}</span>` : '';
-
-        // Get stats based on performance mode
-        const stats = this.getStatsForMode(player);
-
-        if (this.currentPosition === 'goalkeepers') {
-            return `
-                <tr>
-                    <td><span class="player-name">${name}</span></td>
-                    <td>${stats.minutes}</td>
-                    <td>${stats.xGC.toFixed(2)}</td>
-                    <td>${stats.total_points.toFixed(1)}</td>
-                    <td>${stats.xPoints.toFixed(1)}</td>
-                    <td>${(player.clean_sheets || 0).toFixed(2)}</td>
-                    <td>${(player.saves || 0).toFixed(1)}</td>
-                    <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
-                    <td>${player.team_against} ${homeAwayBadge}</td>
-                    <td><span class="${difficultyClass}">${player.diff > 0 ? '+' : ''}${player.diff.toFixed(1)}</span></td>
-                </tr>
-            `;
-        } else if (this.currentPosition === 'defenders') {
-            return `
-                <tr>
-                    <td><span class="player-name">${name}</span></td>
-                    <td>${stats.minutes}</td>
-                    <td>${(player.xG || 0).toFixed(2)}</td>
-                    <td>${(player.xA || 0).toFixed(2)}</td>
-                    <td>${(player.xGC || 0).toFixed(2)}</td>
-                    <td>${stats.total_points.toFixed(1)}</td>
-                    <td>${stats.xPoints.toFixed(1)}</td>
-                    <td>${(player.clean_sheets || 0).toFixed(2)}</td>
-                    <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
-                    <td>${player.team_against} ${homeAwayBadge}</td>
-                    <td><span class="${difficultyClass}">${player.diff > 0 ? '+' : ''}${player.diff.toFixed(1)}</span></td>
-                </tr>
-            `;
-        } else if (this.currentPosition === 'midfielders') {
-            return `
-                <tr>
-                    <td><span class="player-name">${name}</span></td>
-                    <td>${stats.minutes}</td>
-                    <td>${(player.xG || 0).toFixed(2)}</td>
-                    <td>${(player.xA || 0).toFixed(2)}</td>
-                    <td>${stats.total_points.toFixed(1)}</td>
-                    <td>${stats.xPoints.toFixed(1)}</td>
-                    <td>${(player.goal_scored || 0).toFixed(2)}</td>
-                    <td>${(player.assists || 0).toFixed(2)}</td>
-                    <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
-                    <td>${player.team_against} ${homeAwayBadge}</td>
-                    <td><span class="${difficultyClass}">${player.diff > 0 ? '+' : ''}${player.diff.toFixed(1)}</span></td>
-                </tr>
-            `;
-        } else if (this.currentPosition === 'attackers') {
-            return `
-                <tr>
-                    <td><span class="player-name">${name}</span></td>
-                    <td>${stats.minutes}</td>
-                    <td>${(player.xG || 0).toFixed(2)}</td>
-                    <td>${(player.xA || 0).toFixed(2)}</td>
-                    <td>${stats.total_points.toFixed(1)}</td>
-                    <td>${stats.xPoints.toFixed(1)}</td>
-                    <td>${(player.goal_scored || 0).toFixed(2)}</td>
-                    <td>${(player.assists || 0).toFixed(2)}</td>
-                    <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
-                    <td>${player.team_against} ${homeAwayBadge}</td>
-                    <td><span class="${difficultyClass}">${player.diff > 0 ? '+' : ''}${player.diff.toFixed(1)}</span></td>
-                </tr>
-            `;
-        }
-        return '';
-    }
-
-    getStatsForMode(player) {
-        if (this.performanceMode === 'home') {
-            return {
-                minutes: player['Home/Away_minutes'] || Math.round(player.minutes / 2),
-                total_points: player['total_points_Home/Away'] || player.total_points,
-                xPoints: player['xPoints_Home/Away'] || player.xPoints,
-                xGC: player.xGC || 0
-            };
-        } else if (this.performanceMode === 'away') {
-            return {
-                minutes: player['Home/Away_minutes'] || Math.round(player.minutes / 2),
-                total_points: player['total_points_Home/Away'] || player.total_points * 0.9,
-                xPoints: player['xPoints_Home/Away'] || player.xPoints * 0.9,
-                xGC: player.xGC || 0
-            };
-        } else {
-            return {
-                minutes: player.minutes,
-                total_points: player.total_points,
-                xPoints: player.xPoints,
-                xGC: player.xGC || 0
-            };
-        }
-    }
-
-    getDifficultyClass(diff) {
-        if (diff <= -0.3) return 'difficulty-easy';
-        if (diff >= 0.3) return 'difficulty-hard';
-        return 'difficulty-medium';
     }
 
     getFormClass(form) {
@@ -367,227 +604,11 @@ class FPLStatHub {
         return 'form-poor';
     }
 
-    renderAnalytics() {
-        setTimeout(() => {
-            this.renderXgXaChart();
-            this.renderFormChart();
-            this.renderPointsChart();
-            this.renderHomeAwayChart();
-        }, 100);
-    }
-
-    renderXgXaChart() {
-        const ctx = document.getElementById('xgXaChart');
-        if (!ctx) return;
-
-        const allPlayers = [
-            ...this.data.defenders,
-            ...this.data.midfielders,
-            ...this.data.attackers
-        ].filter(p => p.xG !== undefined && p.xA !== undefined);
-
-        new Chart(ctx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'xG vs xA',
-                    data: allPlayers.map(p => ({
-                        x: p.xG,
-                        y: p.xA,
-                        label: `${p.first_name} ${p.second_name}`
-                    })),
-                    backgroundColor: '#1FB8CD',
-                    borderColor: '#1FB8CD'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => {
-                                const point = context.raw;
-                                return `${point.label}: xG: ${point.x.toFixed(2)}, xA: ${point.y.toFixed(2)}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        title: { display: true, text: 'Expected Goals (xG)' }
-                    },
-                    y: {
-                        title: { display: true, text: 'Expected Assists (xA)' }
-                    }
-                }
-            }
-        });
-    }
-
-    renderFormChart() {
-        const ctx = document.getElementById('formChart');
-        if (!ctx) return;
-
-        const allPlayers = [
-            ...this.data.goalkeepers,
-            ...this.data.defenders,
-            ...this.data.midfielders,
-            ...this.data.attackers
-        ];
-
-        const formRanges = {
-            'Excellent (7.5+)': allPlayers.filter(p => p.form >= 7.5).length,
-            'Good (6.0-7.4)': allPlayers.filter(p => p.form >= 6.0 && p.form < 7.5).length,
-            'Average (4.0-5.9)': allPlayers.filter(p => p.form >= 4.0 && p.form < 6.0).length,
-            'Poor (<4.0)': allPlayers.filter(p => p.form < 4.0).length
-        };
-
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(formRanges),
-                datasets: [{
-                    data: Object.values(formRanges),
-                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#5D878F']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-
-    renderPointsChart() {
-        const ctx = document.getElementById('pointsChart');
-        if (!ctx) return;
-
-        const allPlayers = [
-            ...this.data.goalkeepers,
-            ...this.data.defenders,
-            ...this.data.midfielders,
-            ...this.data.attackers
-        ];
-
-        new Chart(ctx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'xPoints vs Actual Points',
-                    data: allPlayers.map(p => ({
-                        x: p.xPoints,
-                        y: p.total_points,
-                        label: `${p.first_name} ${p.second_name}`
-                    })),
-                    backgroundColor: '#FFC185',
-                    borderColor: '#FFC185'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => {
-                                const point = context.raw;
-                                return `${point.label}: xPoints: ${point.x.toFixed(1)}, Points: ${point.y.toFixed(1)}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        title: { display: true, text: 'Expected Points (xPoints)' }
-                    },
-                    y: {
-                        title: { display: true, text: 'Actual Points' }
-                    }
-                }
-            }
-        });
-    }
-
-    renderHomeAwayChart() {
-        const ctx = document.getElementById('homeAwayChart');
-        if (!ctx) return;
-
-        const allPlayers = [
-            ...this.data.goalkeepers,
-            ...this.data.defenders,
-            ...this.data.midfielders,
-            ...this.data.attackers
-        ];
-
-        const homeStats = allPlayers.map(p => p['total_points_Home/Away'] || p.total_points).reduce((a, b) => a + b, 0) / allPlayers.length;
-        const awayStats = allPlayers.map(p => p['total_points_Home/Away'] || p.total_points * 0.9).reduce((a, b) => a + b, 0) / allPlayers.length;
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Home', 'Away'],
-                datasets: [{
-                    label: 'Average Points',
-                    data: [homeStats, awayStats],
-                    backgroundColor: ['#B4413C', '#ECEBD5']
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Average Points' }
-                    }
-                }
-            }
-        });
-    }
-
-    updateLastUpdated() {
-        const lastUpdated = new Date().toLocaleString();
-        const lastUpdatedEl = document.getElementById('lastUpdated');
-        if (lastUpdatedEl) {
-            lastUpdatedEl.textContent = `Updated: ${lastUpdated}`;
-        }
-    }
-
-    refreshData() {
-        const refreshBtn = document.getElementById('refreshBtn');
-        const refreshIcon = document.getElementById('refreshIcon');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        
-        // Show loading state
-        if (refreshIcon) {
-            refreshIcon.style.animation = 'spin 1s linear infinite';
-        }
-        if (loadingOverlay) {
-            loadingOverlay.classList.remove('hidden');
-        }
-        
-        // Simulate data fetch
-        setTimeout(() => {
-            this.loadSampleData();
-            this.renderCurrentTab();
-            this.updateLastUpdated();
-            
-            // Hide loading state
-            if (refreshIcon) {
-                refreshIcon.style.animation = '';
-            }
-            if (loadingOverlay) {
-                loadingOverlay.classList.add('hidden');
-            }
-            
-            // Add update animation to tables
-            document.querySelectorAll('.stats-table tbody tr').forEach(row => {
-                row.classList.add('data-update');
-                setTimeout(() => row.classList.remove('data-update'), 500);
-            });
-        }, 1500);
+    getLeaguePositionClass(position) {
+        if (position <= 4) return 'top-4';
+        if (position <= 7) return 'europe';
+        if (position >= 18) return 'relegation';
+        return 'mid-table';
     }
 }
 
