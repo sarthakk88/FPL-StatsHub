@@ -1,714 +1,597 @@
-// FPL StatHub JavaScript
+// FPL StatHub Application JavaScript
 
-// Sample data from the provided JSON
-const sampleData = {
-  "players": [
-    {"id": 1, "name": "Erling Haaland", "position": "Forward", "team": "Manchester City", "price": 15.0, "points": 195, "form": 8.2, "xG": 0.89, "xA": 0.12, "minutes": 2847, "ownership": 45.2, "bonus": 12},
-    {"id": 2, "name": "Mohamed Salah", "position": "Midfielder", "team": "Liverpool", "price": 13.1, "points": 187, "form": 7.8, "xG": 0.67, "xA": 0.43, "minutes": 3104, "ownership": 51.8, "bonus": 18},
-    {"id": 3, "name": "Harry Kane", "position": "Forward", "team": "Bayern Munich", "price": 11.5, "points": 168, "form": 7.2, "xG": 0.74, "xA": 0.21, "minutes": 2654, "ownership": 28.4, "bonus": 14},
-    {"id": 4, "name": "Kevin De Bruyne", "position": "Midfielder", "team": "Manchester City", "price": 9.8, "points": 156, "form": 6.9, "xG": 0.31, "xA": 0.58, "minutes": 2387, "ownership": 19.7, "bonus": 22},
-    {"id": 5, "name": "Virgil van Dijk", "position": "Defender", "team": "Liverpool", "price": 6.2, "points": 134, "form": 5.8, "xG": 0.09, "xA": 0.04, "minutes": 3298, "ownership": 34.1, "bonus": 8},
-    {"id": 6, "name": "Alisson", "position": "Goalkeeper", "team": "Liverpool", "price": 5.6, "points": 142, "form": 5.2, "xG": 0.0, "xA": 0.0, "minutes": 3240, "ownership": 23.5, "bonus": 3},
-    {"id": 7, "name": "Bukayo Saka", "position": "Midfielder", "team": "Arsenal", "price": 8.9, "points": 171, "form": 7.5, "xG": 0.34, "xA": 0.41, "minutes": 2987, "ownership": 42.3, "bonus": 16},
-    {"id": 8, "name": "Marcus Rashford", "position": "Forward", "team": "Manchester United", "price": 8.2, "points": 149, "form": 6.4, "xG": 0.51, "xA": 0.18, "minutes": 2543, "ownership": 15.8, "bonus": 11},
-    {"id": 9, "name": "Trent Alexander-Arnold", "position": "Defender", "team": "Liverpool", "price": 7.1, "points": 158, "form": 6.8, "xG": 0.07, "xA": 0.29, "minutes": 2876, "ownership": 38.9, "bonus": 13},
-    {"id": 10, "name": "Ederson", "position": "Goalkeeper", "team": "Manchester City", "price": 5.4, "points": 138, "form": 5.0, "xG": 0.0, "xA": 0.01, "minutes": 3150, "ownership": 18.2, "bonus": 2}
-  ],
-  "teams": [
-    {"id": 1, "name": "Manchester City", "logo": "MCI", "goals_for": 89, "goals_against": 31, "xG": 85.2, "xGA": 29.8, "clean_sheets": 18, "position": 1, "points": 91},
-    {"id": 2, "name": "Arsenal", "logo": "ARS", "goals_for": 84, "goals_against": 43, "xG": 79.6, "xGA": 41.2, "clean_sheets": 15, "position": 2, "points": 84},
-    {"id": 3, "name": "Liverpool", "logo": "LIV", "goals_for": 86, "goals_against": 41, "xG": 82.1, "xGA": 38.9, "clean_sheets": 16, "position": 3, "points": 82},
-    {"id": 4, "name": "Newcastle United", "logo": "NEW", "goals_for": 68, "goals_against": 56, "xG": 64.3, "xGA": 52.7, "clean_sheets": 11, "position": 4, "points": 71},
-    {"id": 5, "name": "Manchester United", "logo": "MUN", "goals_for": 58, "goals_against": 57, "xG": 61.4, "xGA": 54.8, "clean_sheets": 9, "position": 5, "points": 66}
-  ],
-  "myTeam": {
-    "id": 12345,
-    "name": "Dream Team FC",
-    "totalPoints": 2147,
-    "rank": 15432,
-    "gameweekPoints": 78,
-    "players": [
-      {"id": 1, "name": "Erling Haaland", "position": "Forward", "points": 12, "captain": true},
-      {"id": 2, "name": "Mohamed Salah", "position": "Midfielder", "points": 8, "captain": false},
-      {"id": 6, "name": "Alisson", "position": "Goalkeeper", "points": 6, "captain": false}
-    ]
-  }
-};
+class FPLStatHub {
+    constructor() {
+        this.data = {
+            goalkeepers: [],
+            defenders: [],
+            midfielders: [],
+            attackers: [],
+            metadata: {}
+        };
+        
+        this.currentPosition = 'goalkeepers';
+        this.currentSort = { column: null, direction: 'desc' };
+        this.filters = {
+            minutes: 500,
+            form: 0,
+            xPoints: 0,
+            performance: 'all'
+        };
+        this.performanceMode = 'overall';
+        
+        this.init();
+    }
 
-// Chart colors matching FPL theme
-const chartColors = ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545', '#D2BA4C', '#964325', '#944454', '#13343B'];
-const fplColors = {
-  primary: '#38003c',
-  secondary: '#3D195B',
-  accent: '#00ff85',
-  light: '#f8f9fa'
-};
+    init() {
+        this.loadSampleData();
+        this.setupEventListeners();
+        this.renderCurrentTab();
+        this.updateLastUpdated();
+    }
 
-// Global variables
-let currentPlayers = [...sampleData.players];
-let currentTeams = [...sampleData.teams];
-let charts = {};
+    loadSampleData() {
+        // Sample data from the provided JSON
+        this.data = {
+            goalkeepers: [
+                {"first_name": "Alisson", "second_name": "Ramses Becker", "id": 1, "minutes": 2880, "xGC": 1.12, "total_points": 4.5, "xPoints": 4.8, "Home/Away_minutes": 1440, "total_points_Home/Away": 4.8, "xPoints_Home/Away": 5.1, "clean_sheets": 0.45, "goals_conceded": 1.05, "bonus": 0.15, "saves": 2.8, "form": 5.2, "diff": -0.3, "team_against": "Arsenal", "Home/Away": "Home"},
+                {"first_name": "Jordan", "second_name": "Pickford", "id": 2, "minutes": 2790, "xGC": 1.35, "total_points": 3.9, "xPoints": 4.2, "Home/Away_minutes": 1395, "total_points_Home/Away": 4.1, "xPoints_Home/Away": 4.4, "clean_sheets": 0.32, "goals_conceded": 1.28, "bonus": 0.08, "saves": 3.2, "form": 4.8, "diff": 0.2, "team_against": "Manchester City", "Home/Away": "Away"}
+            ],
+            defenders: [
+                {"first_name": "Virgil", "second_name": "van Dijk", "id": 3, "minutes": 3150, "xG": 0.12, "xA": 0.08, "xGC": 0.89, "total_points": 5.1, "xPoints": 5.4, "Home/Away_minutes": 1575, "total_points_Home/Away": 5.3, "xPoints_Home/Away": 5.6, "goal_scored": 0.11, "assists": 0.06, "clean_sheets": 0.52, "goals_conceded": 0.86, "bonus": 0.18, "form": 6.2, "diff": -0.5, "team_against": "Chelsea", "Home/Away": "Home"},
+                {"first_name": "Trent", "second_name": "Alexander-Arnold", "id": 4, "minutes": 2970, "xG": 0.08, "xA": 0.31, "xGC": 0.92, "total_points": 5.8, "xPoints": 6.1, "Home/Away_minutes": 1485, "total_points_Home/Away": 6.2, "xPoints_Home/Away": 6.5, "goal_scored": 0.06, "assists": 0.27, "clean_sheets": 0.49, "goals_conceded": 0.89, "bonus": 0.22, "form": 6.8, "diff": -0.5, "team_against": "Chelsea", "Home/Away": "Home"}
+            ],
+            midfielders: [
+                {"first_name": "Mohamed", "second_name": "Salah", "id": 5, "minutes": 3060, "xG": 0.68, "xA": 0.41, "xGC": 0.95, "total_points": 7.2, "xPoints": 7.8, "Home/Away_minutes": 1530, "total_points_Home/Away": 7.6, "xPoints_Home/Away": 8.2, "goal_scored": 0.62, "assists": 0.35, "clean_sheets": 0.21, "goals_conceded": 0.92, "bonus": 0.31, "form": 8.1, "diff": -0.5, "team_against": "Chelsea", "Home/Away": "Home"},
+                {"first_name": "Kevin", "second_name": "De Bruyne", "id": 6, "minutes": 2520, "xG": 0.29, "xA": 0.67, "xGC": 0.78, "total_points": 6.8, "xPoints": 7.3, "Home/Away_minutes": 1260, "total_points_Home/Away": 7.1, "xPoints_Home/Away": 7.6, "goal_scored": 0.25, "assists": 0.61, "clean_sheets": 0.28, "goals_conceded": 0.75, "bonus": 0.35, "form": 7.4, "diff": 0.8, "team_against": "Burnley", "Home/Away": "Home"}
+            ],
+            attackers: [
+                {"first_name": "Erling", "second_name": "Haaland", "id": 7, "minutes": 2880, "xG": 0.89, "xA": 0.15, "total_points": 8.9, "xPoints": 9.2, "Home/Away_minutes": 1440, "total_points_Home/Away": 9.3, "xPoints_Home/Away": 9.6, "goal_scored": 0.85, "assists": 0.12, "bonus": 0.41, "form": 8.7, "diff": 0.8, "team_against": "Burnley", "Home/Away": "Home"},
+                {"first_name": "Harry", "second_name": "Kane", "id": 8, "minutes": 2970, "xG": 0.74, "xA": 0.23, "total_points": 7.8, "xPoints": 8.1, "Home/Away_minutes": 1485, "total_points_Home/Away": 8.2, "xPoints_Home/Away": 8.5, "goal_scored": 0.69, "assists": 0.19, "bonus": 0.28, "form": 7.5, "diff": 0.1, "team_against": "Newcastle", "Home/Away": "Away"}
+            ],
+            metadata: {
+                lastUpdated: "2025-08-01T16:00:00Z",
+                gameweek: 20,
+                dataSource: "FPL API via Python Client",
+                minutesThreshold: 60,
+                matchesAnalyzed: 5
+            }
+        };
+    }
 
-// DOM Content Loaded
-document.addEventListener('DOMContentLoaded', function() {
-  initializeApp();
-});
+    setupEventListeners() {
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const position = e.target.dataset.position;
+                this.switchTab(position);
+            });
+        });
 
-function initializeApp() {
-  setupNavigation();
-  setupMobileMenu();
-  setupPlayerFilters();
-  setupTeamFilters();
-  setupModals();
-  
-  // Initialize default view
-  renderPlayersTable();
-  renderTeamsGrid();
-  loadMyTeam();
-  
-  // Populate team filter options
-  populateTeamFilter();
-  
-  // Initialize My Team charts after a short delay
-  setTimeout(() => {
-    initializeMyTeamCharts(sampleData.myTeam);
-  }, 300);
-}
+        // Table sorting
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('[data-sort]')) {
+                const column = e.target.dataset.sort;
+                this.sortTable(column);
+            }
+        });
 
-// Navigation functionality
-function setupNavigation() {
-  const navButtons = document.querySelectorAll('.nav-btn');
-  
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const targetTab = this.getAttribute('data-tab');
-      console.log('Switching to tab:', targetTab);
-      
-      switchTab(targetTab);
-      
-      // Update active nav button for both desktop and mobile
-      navButtons.forEach(navBtn => navBtn.classList.remove('active'));
-      document.querySelectorAll(`[data-tab="${targetTab}"]`).forEach(navBtn => 
-        navBtn.classList.add('active')
-      );
-      
-      // Close mobile menu if open
-      const mobileNav = document.getElementById('mobileNav');
-      if (mobileNav) {
-        mobileNav.classList.remove('active');
-      }
-    });
-  });
-}
+        // Filters
+        const minutesFilter = document.getElementById('minutesFilter');
+        if (minutesFilter) {
+            minutesFilter.addEventListener('input', (e) => {
+                this.filters.minutes = parseInt(e.target.value);
+                document.getElementById('minutesValue').textContent = e.target.value;
+                this.renderCurrentTab();
+            });
+        }
 
-function switchTab(tabName) {
-  console.log('Switching to tab:', tabName);
-  
-  // Hide all tab contents
-  document.querySelectorAll('.tab-content').forEach(tab => {
-    tab.classList.remove('active');
-  });
-  
-  // Show target tab
-  const targetTab = document.getElementById(tabName);
-  if (targetTab) {
-    targetTab.classList.add('active');
-    console.log(`Tab ${tabName} is now active`);
-  } else {
-    console.error(`Tab ${tabName} not found`);
-  }
-  
-  // Initialize tab-specific content with delay to ensure DOM is ready
-  if (tabName === 'teams') {
-    setTimeout(() => {
-      initializeTeamCharts();
-    }, 200);
-  }
-}
+        const formFilter = document.getElementById('formFilter');
+        if (formFilter) {
+            formFilter.addEventListener('input', (e) => {
+                this.filters.form = parseFloat(e.target.value);
+                document.getElementById('formValue').textContent = e.target.value + '+';
+                this.renderCurrentTab();
+            });
+        }
 
-// Mobile menu functionality
-function setupMobileMenu() {
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const mobileNav = document.getElementById('mobileNav');
-  
-  if (mobileMenuBtn && mobileNav) {
-    mobileMenuBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      mobileNav.classList.toggle('active');
-    });
-  }
-}
+        const xPointsFilter = document.getElementById('xPointsFilter');
+        if (xPointsFilter) {
+            xPointsFilter.addEventListener('input', (e) => {
+                this.filters.xPoints = parseFloat(e.target.value);
+                document.getElementById('xPointsValue').textContent = e.target.value + '+';
+                this.renderCurrentTab();
+            });
+        }
 
-// My Team functionality
-function loadMyTeam() {
-  const loadTeamBtn = document.getElementById('loadTeamBtn');
-  const teamIdInput = document.getElementById('teamId');
-  
-  if (loadTeamBtn && teamIdInput) {
-    loadTeamBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const teamId = teamIdInput.value;
-      console.log('Loading team with ID:', teamId);
-      
-      if (teamId) {
-        showLoading();
+        const performanceFilter = document.getElementById('performanceFilter');
+        if (performanceFilter) {
+            performanceFilter.addEventListener('change', (e) => {
+                this.filters.performance = e.target.value;
+                this.renderCurrentTab();
+            });
+        }
+
+        // Performance mode toggle
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mode = e.target.dataset.mode;
+                this.setPerformanceMode(mode);
+            });
+        });
+
+        // Refresh button
+        const refreshBtn = document.getElementById('refreshBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                this.refreshData();
+            });
+        }
+    }
+
+    switchTab(position) {
+        // Update active tab
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        const activeTab = document.querySelector(`[data-position="${position}"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
+
+        // Update active tab pane
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('active');
+        });
+        
+        if (position === 'analytics') {
+            const analyticsPane = document.getElementById('analytics');
+            if (analyticsPane) {
+                analyticsPane.classList.add('active');
+                this.renderAnalytics();
+            }
+        } else {
+            const positionPane = document.getElementById(position);
+            if (positionPane) {
+                positionPane.classList.add('active');
+                this.currentPosition = position;
+                this.currentSort = { column: null, direction: 'desc' }; // Reset sort when switching tabs
+                this.renderCurrentTab();
+            }
+        }
+    }
+
+    setPerformanceMode(mode) {
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const activeBtn = document.querySelector(`[data-mode="${mode}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+        
+        this.performanceMode = mode;
+        this.renderCurrentTab();
+    }
+
+    sortTable(column) {
+        if (this.currentSort.column === column) {
+            this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            this.currentSort.column = column;
+            this.currentSort.direction = 'desc';
+        }
+
+        // Update sort indicators
+        document.querySelectorAll('[data-sort]').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+        });
+        
+        const currentTh = document.querySelector(`[data-sort="${column}"]`);
+        if (currentTh) {
+            currentTh.classList.add(`sort-${this.currentSort.direction}`);
+        }
+
+        this.renderCurrentTab();
+    }
+
+    filterData(data) {
+        return data.filter(player => {
+            const minutes = this.performanceMode === 'home' ? (player['Home/Away_minutes'] || player.minutes / 2) :
+                           this.performanceMode === 'away' ? (player['Home/Away_minutes'] || player.minutes / 2) :
+                           player.minutes;
+            
+            return minutes >= this.filters.minutes &&
+                   player.form >= this.filters.form &&
+                   player.xPoints >= this.filters.xPoints;
+        });
+    }
+
+    sortData(data) {
+        if (!this.currentSort.column) return data;
+
+        return [...data].sort((a, b) => {
+            let aVal = a[this.currentSort.column];
+            let bVal = b[this.currentSort.column];
+
+            if (this.currentSort.column === 'name') {
+                aVal = `${a.first_name} ${a.second_name}`;
+                bVal = `${b.first_name} ${b.second_name}`;
+            }
+
+            if (typeof aVal === 'string') {
+                return this.currentSort.direction === 'asc' ? 
+                    aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            }
+
+            // Handle undefined/null values
+            if (aVal === undefined || aVal === null) aVal = 0;
+            if (bVal === undefined || bVal === null) bVal = 0;
+
+            return this.currentSort.direction === 'asc' ? aVal - bVal : bVal - aVal;
+        });
+    }
+
+    renderCurrentTab() {
+        if (this.currentPosition === 'analytics') return;
+
+        const rawData = this.data[this.currentPosition] || [];
+        const filteredData = this.filterData(rawData);
+        const sortedData = this.sortData(filteredData);
+
+        const tbody = document.getElementById(`${this.currentPosition}Table`);
+        if (!tbody) return;
+
+        if (sortedData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--color-text-secondary);">No players match the current filters</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = sortedData.map(player => {
+            return this.renderPlayerRow(player);
+        }).join('');
+    }
+
+    renderPlayerRow(player) {
+        const name = `${player.first_name} ${player.second_name}`;
+        const difficultyClass = this.getDifficultyClass(player.diff);
+        const formClass = this.getFormClass(player.form);
+        const homeAwayBadge = player['Home/Away'] ? 
+            `<span class="badge badge-${player['Home/Away'].toLowerCase()}">${player['Home/Away']}</span>` : '';
+
+        // Get stats based on performance mode
+        const stats = this.getStatsForMode(player);
+
+        if (this.currentPosition === 'goalkeepers') {
+            return `
+                <tr>
+                    <td><span class="player-name">${name}</span></td>
+                    <td>${stats.minutes}</td>
+                    <td>${stats.xGC.toFixed(2)}</td>
+                    <td>${stats.total_points.toFixed(1)}</td>
+                    <td>${stats.xPoints.toFixed(1)}</td>
+                    <td>${(player.clean_sheets || 0).toFixed(2)}</td>
+                    <td>${(player.saves || 0).toFixed(1)}</td>
+                    <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
+                    <td>${player.team_against} ${homeAwayBadge}</td>
+                    <td><span class="${difficultyClass}">${player.diff > 0 ? '+' : ''}${player.diff.toFixed(1)}</span></td>
+                </tr>
+            `;
+        } else if (this.currentPosition === 'defenders') {
+            return `
+                <tr>
+                    <td><span class="player-name">${name}</span></td>
+                    <td>${stats.minutes}</td>
+                    <td>${(player.xG || 0).toFixed(2)}</td>
+                    <td>${(player.xA || 0).toFixed(2)}</td>
+                    <td>${(player.xGC || 0).toFixed(2)}</td>
+                    <td>${stats.total_points.toFixed(1)}</td>
+                    <td>${stats.xPoints.toFixed(1)}</td>
+                    <td>${(player.clean_sheets || 0).toFixed(2)}</td>
+                    <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
+                    <td>${player.team_against} ${homeAwayBadge}</td>
+                    <td><span class="${difficultyClass}">${player.diff > 0 ? '+' : ''}${player.diff.toFixed(1)}</span></td>
+                </tr>
+            `;
+        } else if (this.currentPosition === 'midfielders') {
+            return `
+                <tr>
+                    <td><span class="player-name">${name}</span></td>
+                    <td>${stats.minutes}</td>
+                    <td>${(player.xG || 0).toFixed(2)}</td>
+                    <td>${(player.xA || 0).toFixed(2)}</td>
+                    <td>${stats.total_points.toFixed(1)}</td>
+                    <td>${stats.xPoints.toFixed(1)}</td>
+                    <td>${(player.goal_scored || 0).toFixed(2)}</td>
+                    <td>${(player.assists || 0).toFixed(2)}</td>
+                    <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
+                    <td>${player.team_against} ${homeAwayBadge}</td>
+                    <td><span class="${difficultyClass}">${player.diff > 0 ? '+' : ''}${player.diff.toFixed(1)}</span></td>
+                </tr>
+            `;
+        } else if (this.currentPosition === 'attackers') {
+            return `
+                <tr>
+                    <td><span class="player-name">${name}</span></td>
+                    <td>${stats.minutes}</td>
+                    <td>${(player.xG || 0).toFixed(2)}</td>
+                    <td>${(player.xA || 0).toFixed(2)}</td>
+                    <td>${stats.total_points.toFixed(1)}</td>
+                    <td>${stats.xPoints.toFixed(1)}</td>
+                    <td>${(player.goal_scored || 0).toFixed(2)}</td>
+                    <td>${(player.assists || 0).toFixed(2)}</td>
+                    <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
+                    <td>${player.team_against} ${homeAwayBadge}</td>
+                    <td><span class="${difficultyClass}">${player.diff > 0 ? '+' : ''}${player.diff.toFixed(1)}</span></td>
+                </tr>
+            `;
+        }
+        return '';
+    }
+
+    getStatsForMode(player) {
+        if (this.performanceMode === 'home') {
+            return {
+                minutes: player['Home/Away_minutes'] || Math.round(player.minutes / 2),
+                total_points: player['total_points_Home/Away'] || player.total_points,
+                xPoints: player['xPoints_Home/Away'] || player.xPoints,
+                xGC: player.xGC || 0
+            };
+        } else if (this.performanceMode === 'away') {
+            return {
+                minutes: player['Home/Away_minutes'] || Math.round(player.minutes / 2),
+                total_points: player['total_points_Home/Away'] || player.total_points * 0.9,
+                xPoints: player['xPoints_Home/Away'] || player.xPoints * 0.9,
+                xGC: player.xGC || 0
+            };
+        } else {
+            return {
+                minutes: player.minutes,
+                total_points: player.total_points,
+                xPoints: player.xPoints,
+                xGC: player.xGC || 0
+            };
+        }
+    }
+
+    getDifficultyClass(diff) {
+        if (diff <= -0.3) return 'difficulty-easy';
+        if (diff >= 0.3) return 'difficulty-hard';
+        return 'difficulty-medium';
+    }
+
+    getFormClass(form) {
+        if (form >= 7.5) return 'form-excellent';
+        if (form >= 6.0) return 'form-good';
+        if (form >= 4.0) return 'form-average';
+        return 'form-poor';
+    }
+
+    renderAnalytics() {
         setTimeout(() => {
-          displayMyTeamData(sampleData.myTeam);
-          hideLoading();
-        }, 1000);
-      } else {
-        alert('Please enter a valid team ID');
-      }
-    });
-  }
-  
-  // Load default team on page load
-  displayMyTeamData(sampleData.myTeam);
-}
-
-function displayMyTeamData(teamData) {
-  // Update stats
-  const totalPointsEl = document.getElementById('totalPoints');
-  const overallRankEl = document.getElementById('overallRank');
-  const gameweekPointsEl = document.getElementById('gameweekPoints');
-  const teamNameEl = document.getElementById('teamName');
-  
-  if (totalPointsEl) totalPointsEl.textContent = teamData.totalPoints.toLocaleString();
-  if (overallRankEl) overallRankEl.textContent = teamData.rank.toLocaleString();
-  if (gameweekPointsEl) gameweekPointsEl.textContent = teamData.gameweekPoints;
-  if (teamNameEl) teamNameEl.textContent = teamData.name;
-  
-  // Render team players
-  renderTeamPlayers(teamData.players);
-  
-  // Initialize charts with delay
-  setTimeout(() => {
-    initializeMyTeamCharts(teamData);
-  }, 200);
-}
-
-function renderTeamPlayers(players) {
-  const container = document.getElementById('teamPlayersList');
-  if (container) {
-    container.innerHTML = players.map(player => `
-      <div class="player-card" onclick="showPlayerModal(${player.id})" style="cursor: pointer;">
-        <div class="player-name">
-          ${player.name}
-          ${player.captain ? '<span class="captain-badge">C</span>' : ''}
-        </div>
-        <div class="player-position">${player.position}</div>
-        <div class="player-points">${player.points} pts</div>
-      </div>
-    `).join('');
-  }
-}
-
-function initializeMyTeamCharts(teamData) {
-  // Player Performance Chart
-  const playerCtx = document.getElementById('playerPerformanceChart');
-  if (playerCtx && !charts.playerPerformance) {
-    charts.playerPerformance = new Chart(playerCtx, {
-      type: 'bar',
-      data: {
-        labels: teamData.players.map(p => p.name.split(' ').pop()),
-        datasets: [{
-          label: 'Points',
-          data: teamData.players.map(p => p.points),
-          backgroundColor: chartColors.slice(0, teamData.players.length),
-          borderColor: fplColors.accent,
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            labels: {
-              color: fplColors.light
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: { color: fplColors.light },
-            grid: { color: 'rgba(248, 249, 250, 0.1)' }
-          },
-          y: {
-            ticks: { color: fplColors.light },
-            grid: { color: 'rgba(248, 249, 250, 0.1)' }
-          }
-        }
-      }
-    });
-  }
-  
-  // Captain Success Chart
-  const captainCtx = document.getElementById('captainChart');
-  if (captainCtx && !charts.captain) {
-    charts.captain = new Chart(captainCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Captain Points', 'Other Points'],
-        datasets: [{
-          data: [24, 54], // Sample captain vs other points
-          backgroundColor: [fplColors.accent, chartColors[1]],
-          borderColor: fplColors.primary,
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            labels: {
-              color: fplColors.light
-            }
-          }
-        }
-      }
-    });
-  }
-}
-
-// Player functionality
-function setupPlayerFilters() {
-  const searchInput = document.getElementById('playerSearch');
-  const priceRange = document.getElementById('priceRange');
-  const priceValue = document.getElementById('priceValue');
-  const teamFilter = document.getElementById('teamFilter');
-  const positionTabs = document.querySelectorAll('.position-tab');
-  
-  // Search functionality
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      filterPlayers();
-    });
-  }
-  
-  // Price range functionality
-  if (priceRange && priceValue) {
-    priceRange.addEventListener('input', function() {
-      priceValue.textContent = `£${this.value}m`;
-      filterPlayers();
-    });
-  }
-  
-  // Team filter functionality
-  if (teamFilter) {
-    teamFilter.addEventListener('change', function() {
-      filterPlayers();
-    });
-  }
-  
-  // Position tabs functionality
-  positionTabs.forEach(tab => {
-    tab.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      positionTabs.forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      filterPlayers();
-    });
-  });
-  
-  // Table sorting functionality
-  setupTableSorting();
-}
-
-function populateTeamFilter() {
-  const teamFilter = document.getElementById('teamFilter');
-  if (teamFilter) {
-    const teams = [...new Set(sampleData.players.map(p => p.team))].sort();
-    
-    teams.forEach(team => {
-      const option = document.createElement('option');
-      option.value = team;
-      option.textContent = team;
-      teamFilter.appendChild(option);
-    });
-  }
-}
-
-function filterPlayers() {
-  const searchInput = document.getElementById('playerSearch');
-  const priceRange = document.getElementById('priceRange');
-  const teamFilter = document.getElementById('teamFilter');
-  const activePositionTab = document.querySelector('.position-tab.active');
-  
-  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
-  const maxPrice = priceRange ? parseFloat(priceRange.value) : 15;
-  const selectedTeam = teamFilter ? teamFilter.value : '';
-  const selectedPosition = activePositionTab ? activePositionTab.getAttribute('data-position') : 'all';
-  
-  currentPlayers = sampleData.players.filter(player => {
-    const matchesSearch = !searchTerm || player.name.toLowerCase().includes(searchTerm);
-    const matchesPrice = player.price <= maxPrice;
-    const matchesTeam = !selectedTeam || player.team === selectedTeam;
-    const matchesPosition = selectedPosition === 'all' || player.position === selectedPosition;
-    
-    return matchesSearch && matchesPrice && matchesTeam && matchesPosition;
-  });
-  
-  renderPlayersTable();
-}
-
-function renderPlayersTable() {
-  const tbody = document.getElementById('playersTableBody');
-  
-  if (tbody) {
-    tbody.innerHTML = currentPlayers.map(player => `
-      <tr onclick="showPlayerModal(${player.id})" style="cursor: pointer;">
-        <td>${player.name}</td>
-        <td>${player.position}</td>
-        <td>${player.team}</td>
-        <td>£${player.price}m</td>
-        <td>${player.points}</td>
-        <td>${player.form}</td>
-        <td>${player.ownership}%</td>
-        <td>${player.xG.toFixed(2)}</td>
-        <td>${player.xA.toFixed(2)}</td>
-      </tr>
-    `).join('');
-  }
-}
-
-function setupTableSorting() {
-  const sortableHeaders = document.querySelectorAll('.sortable');
-  
-  sortableHeaders.forEach(header => {
-    header.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const sortKey = this.getAttribute('data-sort');
-      sortPlayers(sortKey);
-    });
-  });
-}
-
-function sortPlayers(key) {
-  const isNumeric = ['price', 'points', 'form', 'ownership', 'xG', 'xA'].includes(key);
-  
-  currentPlayers.sort((a, b) => {
-    if (isNumeric) {
-      return b[key] - a[key]; // Descending for numeric
-    } else {
-      return a[key].localeCompare(b[key]); // Ascending for text
+            this.renderXgXaChart();
+            this.renderFormChart();
+            this.renderPointsChart();
+            this.renderHomeAwayChart();
+        }, 100);
     }
-  });
-  
-  renderPlayersTable();
-}
 
-// Team functionality
-function setupTeamFilters() {
-  const teamSort = document.getElementById('teamSort');
-  
-  if (teamSort) {
-    teamSort.addEventListener('change', function() {
-      sortTeams(this.value);
-    });
-  }
-}
+    renderXgXaChart() {
+        const ctx = document.getElementById('xgXaChart');
+        if (!ctx) return;
 
-function sortTeams(sortBy) {
-  currentTeams.sort((a, b) => {
-    if (sortBy === 'position') {
-      return a[sortBy] - b[sortBy]; // Ascending for position
-    } else {
-      return b[sortBy] - a[sortBy]; // Descending for others
-    }
-  });
-  
-  renderTeamsGrid();
-}
+        const allPlayers = [
+            ...this.data.defenders,
+            ...this.data.midfielders,
+            ...this.data.attackers
+        ].filter(p => p.xG !== undefined && p.xA !== undefined);
 
-function renderTeamsGrid() {
-  const container = document.getElementById('teamsGrid');
-  
-  if (container) {
-    container.innerHTML = currentTeams.map(team => `
-      <div class="team-card">
-        <div class="team-header">
-          <div class="team-name">${team.name}</div>
-          <div class="team-logo">${team.logo}</div>
-        </div>
-        <div class="team-stats-grid">
-          <div class="team-stat">
-            <div class="team-stat-value">${team.position}</div>
-            <div class="team-stat-label">Position</div>
-          </div>
-          <div class="team-stat">
-            <div class="team-stat-value">${team.points}</div>
-            <div class="team-stat-label">Points</div>
-          </div>
-          <div class="team-stat">
-            <div class="team-stat-value">${team.goals_for}</div>
-            <div class="team-stat-label">Goals For</div>
-          </div>
-          <div class="team-stat">
-            <div class="team-stat-value">${team.goals_against}</div>
-            <div class="team-stat-label">Goals Against</div>
-          </div>
-          <div class="team-stat">
-            <div class="team-stat-value">${team.clean_sheets}</div>
-            <div class="team-stat-label">Clean Sheets</div>
-          </div>
-          <div class="team-stat">
-            <div class="team-stat-value">${team.xG.toFixed(1)}</div>
-            <div class="team-stat-label">xG</div>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-}
-
-function initializeTeamCharts() {
-  // Goals Chart
-  const goalsCtx = document.getElementById('goalsChart');
-  if (goalsCtx && !charts.goals) {
-    charts.goals = new Chart(goalsCtx, {
-      type: 'bar',
-      data: {
-        labels: currentTeams.map(t => t.logo),
-        datasets: [
-          {
-            label: 'Goals For',
-            data: currentTeams.map(t => t.goals_for),
-            backgroundColor: fplColors.accent,
-            borderColor: fplColors.primary,
-            borderWidth: 1
-          },
-          {
-            label: 'Goals Against',
-            data: currentTeams.map(t => t.goals_against),
-            backgroundColor: chartColors[2],
-            borderColor: fplColors.primary,
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            labels: {
-              color: fplColors.light
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: { color: fplColors.light },
-            grid: { color: 'rgba(248, 249, 250, 0.1)' }
-          },
-          y: {
-            ticks: { color: fplColors.light },
-            grid: { color: 'rgba(248, 249, 250, 0.1)' }
-          }
-        }
-      }
-    });
-  }
-  
-  // xG Chart
-  const xgCtx = document.getElementById('xgChart');
-  if (xgCtx && !charts.xg) {
-    charts.xg = new Chart(xgCtx, {
-      type: 'scatter',
-      data: {
-        datasets: [{
-          label: 'Teams',
-          data: currentTeams.map(t => ({
-            x: t.xG,
-            y: t.xGA,
-            teamName: t.name
-          })),
-          backgroundColor: chartColors.slice(0, currentTeams.length),
-          borderColor: fplColors.accent,
-          borderWidth: 2,
-          pointRadius: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            labels: {
-              color: fplColors.light
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const point = context.raw;
-                return `${point.teamName}: xG ${point.x.toFixed(1)}, xGA ${point.y.toFixed(1)}`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'Expected Goals (xG)',
-              color: fplColors.light
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'xG vs xA',
+                    data: allPlayers.map(p => ({
+                        x: p.xG,
+                        y: p.xA,
+                        label: `${p.first_name} ${p.second_name}`
+                    })),
+                    backgroundColor: '#1FB8CD',
+                    borderColor: '#1FB8CD'
+                }]
             },
-            ticks: { color: fplColors.light },
-            grid: { color: 'rgba(248, 249, 250, 0.1)' }
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'Expected Goals Against (xGA)',
-              color: fplColors.light
-            },
-            ticks: { color: fplColors.light },
-            grid: { color: 'rgba(248, 249, 250, 0.1)' }
-          }
-        }
-      }
-    });
-  }
-}
-
-// Modal functionality
-function setupModals() {
-  const modal = document.getElementById('playerModal');
-  const modalClose = document.getElementById('modalClose');
-  const modalOverlay = document.getElementById('modalOverlay');
-  
-  if (modalClose) {
-    modalClose.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      hidePlayerModal();
-    });
-  }
-  
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      hidePlayerModal();
-    });
-  }
-  
-  // Close modal on Escape key
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      hidePlayerModal();
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const point = context.raw;
+                                return `${point.label}: xG: ${point.x.toFixed(2)}, xA: ${point.y.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Expected Goals (xG)' }
+                    },
+                    y: {
+                        title: { display: true, text: 'Expected Assists (xA)' }
+                    }
+                }
+            }
+        });
     }
-  });
+
+    renderFormChart() {
+        const ctx = document.getElementById('formChart');
+        if (!ctx) return;
+
+        const allPlayers = [
+            ...this.data.goalkeepers,
+            ...this.data.defenders,
+            ...this.data.midfielders,
+            ...this.data.attackers
+        ];
+
+        const formRanges = {
+            'Excellent (7.5+)': allPlayers.filter(p => p.form >= 7.5).length,
+            'Good (6.0-7.4)': allPlayers.filter(p => p.form >= 6.0 && p.form < 7.5).length,
+            'Average (4.0-5.9)': allPlayers.filter(p => p.form >= 4.0 && p.form < 6.0).length,
+            'Poor (<4.0)': allPlayers.filter(p => p.form < 4.0).length
+        };
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(formRanges),
+                datasets: [{
+                    data: Object.values(formRanges),
+                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#5D878F']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    renderPointsChart() {
+        const ctx = document.getElementById('pointsChart');
+        if (!ctx) return;
+
+        const allPlayers = [
+            ...this.data.goalkeepers,
+            ...this.data.defenders,
+            ...this.data.midfielders,
+            ...this.data.attackers
+        ];
+
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'xPoints vs Actual Points',
+                    data: allPlayers.map(p => ({
+                        x: p.xPoints,
+                        y: p.total_points,
+                        label: `${p.first_name} ${p.second_name}`
+                    })),
+                    backgroundColor: '#FFC185',
+                    borderColor: '#FFC185'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const point = context.raw;
+                                return `${point.label}: xPoints: ${point.x.toFixed(1)}, Points: ${point.y.toFixed(1)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Expected Points (xPoints)' }
+                    },
+                    y: {
+                        title: { display: true, text: 'Actual Points' }
+                    }
+                }
+            }
+        });
+    }
+
+    renderHomeAwayChart() {
+        const ctx = document.getElementById('homeAwayChart');
+        if (!ctx) return;
+
+        const allPlayers = [
+            ...this.data.goalkeepers,
+            ...this.data.defenders,
+            ...this.data.midfielders,
+            ...this.data.attackers
+        ];
+
+        const homeStats = allPlayers.map(p => p['total_points_Home/Away'] || p.total_points).reduce((a, b) => a + b, 0) / allPlayers.length;
+        const awayStats = allPlayers.map(p => p['total_points_Home/Away'] || p.total_points * 0.9).reduce((a, b) => a + b, 0) / allPlayers.length;
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Home', 'Away'],
+                datasets: [{
+                    label: 'Average Points',
+                    data: [homeStats, awayStats],
+                    backgroundColor: ['#B4413C', '#ECEBD5']
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Average Points' }
+                    }
+                }
+            }
+        });
+    }
+
+    updateLastUpdated() {
+        const lastUpdated = new Date().toLocaleString();
+        const lastUpdatedEl = document.getElementById('lastUpdated');
+        if (lastUpdatedEl) {
+            lastUpdatedEl.textContent = `Updated: ${lastUpdated}`;
+        }
+    }
+
+    refreshData() {
+        const refreshBtn = document.getElementById('refreshBtn');
+        const refreshIcon = document.getElementById('refreshIcon');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        
+        // Show loading state
+        if (refreshIcon) {
+            refreshIcon.style.animation = 'spin 1s linear infinite';
+        }
+        if (loadingOverlay) {
+            loadingOverlay.classList.remove('hidden');
+        }
+        
+        // Simulate data fetch
+        setTimeout(() => {
+            this.loadSampleData();
+            this.renderCurrentTab();
+            this.updateLastUpdated();
+            
+            // Hide loading state
+            if (refreshIcon) {
+                refreshIcon.style.animation = '';
+            }
+            if (loadingOverlay) {
+                loadingOverlay.classList.add('hidden');
+            }
+            
+            // Add update animation to tables
+            document.querySelectorAll('.stats-table tbody tr').forEach(row => {
+                row.classList.add('data-update');
+                setTimeout(() => row.classList.remove('data-update'), 500);
+            });
+        }, 1500);
+    }
 }
 
-function showPlayerModal(playerId) {
-  console.log('Showing modal for player ID:', playerId);
-  
-  const player = sampleData.players.find(p => p.id === playerId);
-  if (!player) {
-    console.error('Player not found:', playerId);
-    return;
-  }
-  
-  const modal = document.getElementById('playerModal');
-  const modalPlayerName = document.getElementById('modalPlayerName');
-  const modalBody = document.getElementById('modalBody');
-  
-  if (modal && modalPlayerName && modalBody) {
-    modalPlayerName.textContent = player.name;
-    modalBody.innerHTML = `
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value">£${player.price}m</div>
-          <div class="stat-label">Price</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${player.points}</div>
-          <div class="stat-label">Total Points</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${player.form}</div>
-          <div class="stat-label">Form</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${player.ownership}%</div>
-          <div class="stat-label">Ownership</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${player.xG.toFixed(2)}</div>
-          <div class="stat-label">Expected Goals</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${player.xA.toFixed(2)}</div>
-          <div class="stat-label">Expected Assists</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${player.minutes.toLocaleString()}</div>
-          <div class="stat-label">Minutes Played</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${player.bonus}</div>
-          <div class="stat-label">Bonus Points</div>
-        </div>
-      </div>
-      <div style="margin-top: 24px;">
-        <h4 style="color: #00ff85; margin-bottom: 16px;">Player Information</h4>
-        <p><strong>Position:</strong> ${player.position}</p>
-        <p><strong>Team:</strong> ${player.team}</p>
-        <p><strong>Points per Million:</strong> ${(player.points / player.price).toFixed(1)}</p>
-        <p><strong>Minutes per Point:</strong> ${(player.minutes / player.points).toFixed(1)}</p>
-      </div>
-    `;
-    
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function hidePlayerModal() {
-  const modal = document.getElementById('playerModal');
-  if (modal) {
-    modal.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-  }
-}
-
-// Loading functionality
-function showLoading() {
-  const loadingSpinner = document.getElementById('loadingSpinner');
-  if (loadingSpinner) {
-    loadingSpinner.classList.remove('hidden');
-  }
-}
-
-function hideLoading() {
-  const loadingSpinner = document.getElementById('loadingSpinner');
-  if (loadingSpinner) {
-    loadingSpinner.classList.add('hidden');
-  }
-}
-
-// Make showPlayerModal globally accessible
-window.showPlayerModal = showPlayerModal;
-
-// Utility functions
-function formatNumber(num) {
-  return num.toLocaleString();
-}
-
-function formatPrice(price) {
-  return `£${price.toFixed(1)}m`;
-}
+// Initialize the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new FPLStatHub();
+});
