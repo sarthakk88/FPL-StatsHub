@@ -697,9 +697,12 @@ class FPLStatHub {
                     <td>${(team.xGA || 0).toFixed(2)}</td>
                     <td>${(team.npxG || 0).toFixed(2)}</td>
                     <td>${(team.npxGA || 0).toFixed(2)}</td>
+                    <td>${(team.npxGD || 0).toFixed(2)}</td>                    
                     <td>${(team.xpts || 0).toFixed(2)}</td>
                     <td>${(team.ppda || 0).toFixed(2)}</td>
+                    <td>${(team.ppda_allowed || 0).toFixed(2)}</td>
                     <td>${(team.deep || 0).toFixed(2)}</td>
+                    <td>${(team.deep_allowed || 0).toFixed(2)}</td>
                 </tr>
             `;
         }).join('');
