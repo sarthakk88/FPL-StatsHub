@@ -5,9 +5,7 @@ class FPLStatHub {
         this.data = this.initializeData();
         this.currentMainTab = 'my-team';
         this.currentPlayerPosition = 'goalkeepers';
-        this.filters = {
-            view: 'all'
-        };
+        this.selectedView = 'all';
         this.teamData = {
             all: null,
             last5: null,
@@ -210,8 +208,6 @@ class FPLStatHub {
             });
         }
 
-        // Filters
-        this.setupFilters();
 
         // Table sorting - use event delegation
         document.addEventListener('click', (e) => {
@@ -238,11 +234,23 @@ class FPLStatHub {
             });
         }
 
+        // View filter listener
+        const viewFilter = document.getElementById('viewFilter');
+        if (viewFilter) {
+            viewFilter.addEventListener('change', (e) => {
+                this.selectedView = e.target.value;
+                console.log('View changed to:', this.currentView);
+                if (this.currentMainTab === 'players') {
+                    this.renderPlayersContent();
+                }
+            });
+        }
+
         // Sort listeners for table headers
         this.setupSortListeners();
     }
 
-        getCurrentData() {
+    getCurrentData() {
         const data = this.teamData[this.currentView];
         if (!data || data.length === 0) {
             console.warn(`No data available for view: ${this.currentView}`);
@@ -250,6 +258,25 @@ class FPLStatHub {
         }
         console.log(`Using ${this.currentView} data:`, data.length, 'teams');
         return data;
+    }
+
+    getPlayerData() {
+        const position = this.currentPlayerPosition;  // e.g., 'goalkeepers'
+        const view = this.selectedView || 'all';     // fallback to 'all'
+
+        if (!this.playerData[position] || !this.playerData[position][view]) {
+            console.warn(`No player data for position=${position}, view=${view}`);
+            return [];
+        }
+
+        const data = this.playerData[position][view];
+        console.log(`Using player data for ${position} - ${view}:`, data.length, 'players');
+        // Apply filters
+        return data.filter(player => {
+            if (this.filters.minutes && (player.minutes || 0) < this.filters.minutes) return false;
+            if (this.filters.xPoints && (player.xPoints || 0) < this.filters.xPoints) return false;
+            return true;
+        }).sort((a, b) => (b.xPoints || 0) - (a.xPoints || 0));
     }
 
     setupSortListeners() {
@@ -370,18 +397,6 @@ class FPLStatHub {
                     </td>
                 </tr>
             `;
-        }
-    }
-
-    setupFilters() {
-        const viewFilter = document.getElementById('venueFilter');  // element id stays the same
-        if (viewFilter) {
-            viewFilter.addEventListener('change', (e) => {
-                this.filters.view = e.target.value;      // update to use `view`
-                if (this.currentMainTab === 'players') {
-                    this.renderPlayersContent();         // or renderPlayersTab(), whichever you use
-                }
-            });
         }
     }
 
@@ -514,10 +529,6 @@ class FPLStatHub {
         });
     }
 
-    renderPlayersTab() {
-        // Create sub-navigation and content for players tab
-        this.renderPlayersContent();
-    }
 
     renderPlayersTab() {
         // Render the player sub-navigation (tabs wired elsewhere)
@@ -528,14 +539,11 @@ class FPLStatHub {
         const container = document.getElementById('playersContent');
         if (!container) return;
 
-        // Retrieve data for current position and selected view
-        const position = this.currentPlayerPosition;   // e.g., 'defenders'
-        const view = this.filters.view;                 // e.g., 'all', 'last5', 'home', etc.
+        // Use getPlayerData() to get current player list based on position & view
+        const data = this.getPlayerData();
 
-        const rawData = (this.playerData[position] || {})[view] || [];
-
-        // Generate HTML table and inject into the container
-        container.innerHTML = this.generatePlayerTable(rawData);
+        // Render table with data
+        container.innerHTML = this.generatePlayerTable(data);
     }
 
     generatePlayerTable(data) {
