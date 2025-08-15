@@ -6,6 +6,7 @@ class FPLStatHub {
         this.currentMainTab = 'my-team';
         this.currentPlayerPosition = 'goalkeepers';
         this.selectedView = 'all';
+        
         this.teamData = {
             all: null,
             last5: null,
@@ -13,16 +14,16 @@ class FPLStatHub {
             last5_home: null,
             away: null,
             last5_away: null
-        }; // For team data
+        };
         this.playerData = {};
         this.sortState = {
             column: 'pts',
             direction: 'desc'
         };
         this.currentSort = { column: null, direction: 'desc' };
-        this.currentView = 'all'; ///Teams
-        this.charts = {}; ///Teams
-        this.dataFolder = 'data/'; ///Teams
+        this.currentView = 'all';
+        this.charts = {};
+        this.dataFolder = 'data/';
         this.init();
     }
 
@@ -208,7 +209,6 @@ class FPLStatHub {
             });
         }
 
-
         // Table sorting - use event delegation
         document.addEventListener('click', (e) => {
             if (e.target.hasAttribute('data-sort')) {
@@ -223,23 +223,23 @@ class FPLStatHub {
             }
         });
 
-        // View filter listener
-        const viewFilter = document.getElementById('statsViewFilter');
-        if (viewFilter) {
-            viewFilter.addEventListener('change', (e) => {
+        // Team stats view filter
+        const statsViewFilter = document.getElementById('statsViewFilter');
+        if (statsViewFilter) {
+            statsViewFilter.addEventListener('change', (e) => {
                 this.currentView = e.target.value;
-                console.log('View changed to:', this.currentView);
+                console.log('Stats view changed to:', this.currentView);
                 this.updateTableTitle();
                 this.renderTeamStats();
             });
         }
 
-        // View filter listener
-        const viewFilter = document.getElementById('viewFilter');
-        if (viewFilter) {
-            viewFilter.addEventListener('change', (e) => {
+        // Player view filter 
+        const playerViewFilter = document.getElementById('viewFilter');
+        if (playerViewFilter) {
+            playerViewFilter.addEventListener('change', (e) => {
                 this.selectedView = e.target.value;
-                console.log('View changed to:', this.currentView);
+                console.log('Player view changed to:', this.selectedView);
                 if (this.currentMainTab === 'players') {
                     this.renderPlayersContent();
                 }
@@ -272,11 +272,7 @@ class FPLStatHub {
         const data = this.playerData[position][view];
         console.log(`Using player data for ${position} - ${view}:`, data.length, 'players');
         // Apply filters
-        return data.filter(player => {
-            if (this.filters.minutes && (player.minutes || 0) < this.filters.minutes) return false;
-            if (this.filters.xPoints && (player.xPoints || 0) < this.filters.xPoints) return false;
-            return true;
-        }).sort((a, b) => (b.xPoints || 0) - (a.xPoints || 0));
+        return data
     }
 
     setupSortListeners() {
@@ -596,6 +592,7 @@ class FPLStatHub {
                 base += `
                     <th>xG</th>
                     <th>xA</th>
+                    <th>xGC</th>
                     <th>Points</th>
                     <th>xPoints</th>
                     <th>Home/Away Minutes</th>
@@ -639,17 +636,19 @@ class FPLStatHub {
         }
 
         return base;
-    },
+    }
 
     generatePlayerRow(player) {
-        const name = `${player.first_name ?? ''} ${player.second_name ?? ''}`.trim();
+        const firstName = player.first_name ?? '';
+        const secondName = player.second_name ?? '';
         const badge = player.Home_Away ? `<span class="badge badge-${player.Home_Away.toLowerCase()}">${player.Home_Away}</span>` : '';
         const formClass = this.getFormClass ? this.getFormClass(player.form) : '';
 
         const base = `
-            <td>${name}</td>
+            <td>${firstName}</td>
+            <td>${secondName}</td>
             <td>${player.form?.toFixed(1) ?? '0.0'}</td>
-            <td>${player.team ? player.team : player.team_name ?? ''}</td>
+            <td>${player.team_against ?? ''} ${badge}</td>
             <td>${player.Home_Away ?? ''}</td>
             <td>${player.minutes?.toLocaleString() ?? '0'}</td>`;
 
@@ -673,6 +672,7 @@ class FPLStatHub {
                     <tr>${base}
                         <td>${player.xG?.toFixed(2) ?? '0.00'}</td>
                         <td>${player.xA?.toFixed(2) ?? '0.00'}</td>
+                        <td>${player.xGC?.toFixed(1) ?? '0.0'}</td>
                         <td>${player.total_points ?? 0}</td>
                         <td>${player.xPoints?.toFixed(1) ?? '0.0'}</td>
                         <td>${player.home_away_minutes ?? 0}</td>
@@ -719,7 +719,6 @@ class FPLStatHub {
                 return `<tr>${base}</tr>`;
         }
     }
-
 
     renderLeagueTable() {
         const tbody = document.getElementById('leagueTable');
