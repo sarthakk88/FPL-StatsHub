@@ -1354,7 +1354,7 @@ body {
 .sticky-column {
   position: sticky;
   left: 0;
-  background: white !important;
+  /* background removed */
   z-index: 10;
   border-right: 2px solid #ddd !important;
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
@@ -1420,7 +1420,7 @@ body {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
-  background: white;
+  /* background removed */
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
