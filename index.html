@@ -151,54 +151,164 @@
 
                 <div class="league-table">
                     <h3 id="tableTitle">Premier League Table</h3>
-                    <div class="table-container">
-                        <table class="stats-table">
-                            <thead>
-                                <tr>
-                                    <th>Team</th>
-                                    <th>Pts</th>
-                                    <th>W</th>
-                                    <th>D</th>
-                                    <th>L</th>
-                                    <th>GF</th>
-                                    <th>GA</th>
-                                    <th>xG</th>
-                                    <th>xGA</th>
-                                    <th>npxG</th>
-                                    <th>npxGA</th>
-                                    <th>xPts</th>
-                                    <th>PPDA</th>
-                                    <th>Deep</th>
-                                </tr>
-                            </thead>
-                            <tbody id="leagueTable">
-                                <tr>
-                                    <td colspan="14" class="loading">Loading team data...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    
+                    <!-- Horizontal scroll container for table -->
+                    <div class="table-scroll-container">
+                        <div class="table-container">
+                            <table class="stats-table sortable-table" id="teamStatsTable">
+                                <thead>
+                                    <tr>
+                                        <th class="sortable" data-sort="position" data-type="number">
+                                            <span class="header-content">
+                                                Pos
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable sticky-column" data-sort="team" data-type="string">
+                                            <span class="header-content">
+                                                Team
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="pts" data-type="number">
+                                            <span class="header-content">
+                                                Pts
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="wins" data-type="number">
+                                            <span class="header-content">
+                                                W
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="draws" data-type="number">
+                                            <span class="header-content">
+                                                D
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="loses" data-type="number">
+                                            <span class="header-content">
+                                                L
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="scored" data-type="number">
+                                            <span class="header-content">
+                                                GF
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="conceded" data-type="number">
+                                            <span class="header-content">
+                                                GA
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="xG" data-type="number">
+                                            <span class="header-content">
+                                                xG
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="xGA" data-type="number">
+                                            <span class="header-content">
+                                                xGA
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="npxG" data-type="number">
+                                            <span class="header-content">
+                                                npxG
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="npxGA" data-type="number">
+                                            <span class="header-content">
+                                                npxGA
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="xpts" data-type="number">
+                                            <span class="header-content">
+                                                xPts
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="ppda" data-type="number">
+                                            <span class="header-content">
+                                                PPDA
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="ppda_allowed" data-type="number">
+                                            <span class="header-content">
+                                                PPDA Allow
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="deep" data-type="number">
+                                            <span class="header-content">
+                                                Deep
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="deep_allowed" data-type="number">
+                                            <span class="header-content">
+                                                Deep Allow
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                        <th class="sortable" data-sort="npxGD" data-type="number">
+                                            <span class="header-content">
+                                                npxGD
+                                                <span class="sort-icon">↕️</span>
+                                            </span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leagueTable">
+                                    <tr>
+                                        <td colspan="18" class="loading">Loading team data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Scroll hint -->
+                    <div class="scroll-hint">
+                        ← Scroll horizontally to see all columns →
                     </div>
                 </div>
 
+                <!-- Charts with horizontal scrolling -->
                 <div class="team-charts">
-                    <div class="chart-card">
-                        <h3>Goals For vs Goals Against</h3>
-                        <div class="chart-container" style="position: relative; height: 400px;">
-                            <canvas id="goalsChart"></canvas>
+                    <div class="chart-scroll-container">
+                        <div class="chart-card">
+                            <h3>Goals For vs Goals Against</h3>
+                            <div class="chart-container" style="position: relative; height: 400px; min-width: 800px;">
+                                <canvas id="goalsChart"></canvas>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="chart-card">
-                        <h3>Expected Goals vs Actual Goals</h3>
-                        <div class="chart-container" style="position: relative; height: 400px;">
-                            <canvas id="xGoalsChart"></canvas>
+                    <div class="chart-scroll-container">
+                        <div class="chart-card">
+                            <h3>Expected Goals vs Actual Goals</h3>
+                            <div class="chart-container" style="position: relative; height: 400px; min-width: 800px;">
+                                <canvas id="xGoalsChart"></canvas>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="chart-card">
-                        <h3>Expected Points vs Actual Points</h3>
-                        <div class="chart-container" style="position: relative; height: 400px;">
-                            <canvas id="pointsChart"></canvas>
+                    <div class="chart-scroll-container">
+                        <div class="chart-card">
+                            <h3>Expected Points vs Actual Points</h3>
+                            <div class="chart-container" style="position: relative; height: 400px; min-width: 800px;">
+                                <canvas>
+                            </div>
                         </div>
                     </div>
                 </div>

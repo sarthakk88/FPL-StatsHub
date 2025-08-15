@@ -19,7 +19,10 @@ class FPLStatHub {
             away: null,
             last5_away: null
         };
-
+        this.sortState = {
+            column: 'pts',
+            direction: 'desc'
+        };
         this.currentSort = { column: null, direction: 'desc' };
         this.currentView = 'all'; ///Teams
         this.charts = {}; ///Teams
@@ -102,7 +105,7 @@ class FPLStatHub {
         this.renderTeamStats();
     }
 
-        async loadAllData() {
+    async loadAllData() {
         const dataFiles = {
             all: 'team_all_matches.csv',
             last5: 'team_last5_matches.csv',
@@ -129,7 +132,7 @@ class FPLStatHub {
                     console.log(`Successfully loaded ${key} data:`, this.teamData[key].length, 'teams');
                 } catch (error) {
                     console.error(`Error loading ${key} data from ${filepath}:`, error);
-                    this.teamData[key] = []; // Set empty array as fallback
+                    this.teamData[key] = [];
                 }
             });
 
@@ -162,7 +165,6 @@ class FPLStatHub {
             
             headers.forEach((header, headerIndex) => {
                 const value = values[headerIndex] || '';
-                // Convert numeric values, handling potential parsing errors
                 if (!isNaN(value) && value !== '' && value !== 'N/A') {
                     row[header] = parseFloat(value);
                 } else {
@@ -171,7 +173,7 @@ class FPLStatHub {
             });
             
             return row;
-        }).filter(row => row.team && row.team !== ''); // Filter out empty rows
+        }).filter(row => row.team && row.team !== '');
     }
 
     setupEventListeners() {
@@ -207,6 +209,7 @@ class FPLStatHub {
             }
         });
 
+        // View filter listener
         const viewFilter = document.getElementById('statsViewFilter');
         if (viewFilter) {
             viewFilter.addEventListener('change', (e) => {
@@ -216,6 +219,9 @@ class FPLStatHub {
                 this.renderTeamStats();
             });
         }
+
+        // Sort listeners for table headers
+        this.setupSortListeners();
     }
 
         getCurrentData() {
@@ -226,6 +232,82 @@ class FPLStatHub {
         }
         console.log(`Using ${this.currentView} data:`, data.length, 'teams');
         return data;
+    }
+
+    setupSortListeners() {
+        document.addEventListener('click', (e) => {
+            const sortableHeader = e.target.closest('.sortable');
+            if (sortableHeader) {
+                const column = sortableHeader.getAttribute('data-sort');
+                const type = sortableHeader.getAttribute('data-type');
+                this.handleSort(column, type);
+            }
+        });
+    }
+
+    handleSort(column, type) {
+        // Toggle direction if same column, otherwise set to desc for numbers, asc for strings
+        if (this.sortState.column === column) {
+            this.sortState.direction = this.sortState.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            this.sortState.direction = type === 'number' ? 'desc' : 'asc';
+        }
+        
+        this.sortState.column = column;
+        console.log('Sorting by:', column, this.sortState.direction);
+        
+        this.updateSortIcons();
+        this.renderLeagueTable();
+    }
+
+    updateSortIcons() {
+        // Remove all sort classes
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.classList.remove('sort-asc', 'sort-desc');
+        });
+
+        // Add sort class to current column
+        const currentHeader = document.querySelector(`[data-sort="${this.sortState.column}"]`);
+        if (currentHeader) {
+            currentHeader.classList.add(`sort-${this.sortState.direction}`);
+        }
+    }
+
+    sortData(data) {
+        return [...data].sort((a, b) => {
+            let aValue = a[this.sortState.column];
+            let bValue = b[this.sortState.column];
+
+            // Handle position sorting specially
+            if (this.sortState.column === 'position') {
+                // Calculate position based on points if not available
+                const aPos = data.findIndex(team => team.team === a.team) + 1;
+                const bPos = data.findIndex(team => team.team === b.team) + 1;
+                aValue = aPos;
+                bValue = bPos;
+            }
+
+            // Handle string comparison
+            if (typeof aValue === 'string') {
+                aValue = aValue.toLowerCase();
+                bValue = (bValue || '').toLowerCase();
+                if (this.sortState.direction === 'asc') {
+                    return aValue.localeCompare(bValue);
+                } else {
+                    return bValue.localeCompare(aValue);
+                }
+            }
+
+            // Handle numeric comparison
+            aValue = parseFloat(aValue) || 0;
+            bValue = parseFloat(bValue) || 0;
+
+            if (this.sortState.direction === 'asc') {
+                return aValue - bValue;
+            } else {
+                return bValue - aValue;
+            }
+        });
     }
 
     updateTableTitle() {
@@ -586,32 +668,38 @@ class FPLStatHub {
             return;
         }
 
-        // Sort by points (descending) for league table display
-        const sortedData = [...currentData].sort((a, b) => (b.pts || 0) - (a.pts || 0));
+        // Sort data based on current sort state
+        const sortedData = this.sortData(currentData);
 
         tbody.innerHTML = sortedData.map((team, index) => {
-            const position = index + 1;
+            // Position is based on current sort order, or calculated from points
+            const position = this.sortState.column === 'pts' ? index + 1 : 
+                            [...currentData].sort((a, b) => (b.pts || 0) - (a.pts || 0))
+                            .findIndex(t => t.team === team.team) + 1;
+                            
             const positionClass = this.getLeaguePositionClass(position);
             
             return `
                 <tr class="${positionClass}">
                     <td>
                         <span class="league-position ${positionClass}">${position}</span>
+                    </td>
+                    <td class="sticky-column">
                         <span class="team-name">${team.team || 'N/A'}</span>
                     </td>
                     <td><strong>${team.pts || 0}</strong></td>
-                    <td>${team.wins || 0}</td>
-                    <td>${team.draws || 0}</td>
-                    <td>${team.loses || 0}</td>
-                    <td>${team.scored || 0}</td>
-                    <td>${team.conceded || 0}</td>
-                    <td>${(team.xG || 0).toFixed(1)}</td>
-                    <td>${(team.xGA || 0).toFixed(1)}</td>
-                    <td>${(team.npxG || 0).toFixed(1)}</td>
-                    <td>${(team.npxGA || 0).toFixed(1)}</td>
-                    <td>${(team.xpts || 0).toFixed(1)}</td>
-                    <td>${(team.ppda || 0).toFixed(1)}</td>
-                    <td>${team.deep || 0}</td>
+                    <td>${(team.wins || 0).toFixed(2)}</td>
+                    <td>${(team.draws || 0).toFixed(2)}</td>
+                    <td>${(team.loses || 0).toFixed(2)}</td>
+                    <td>${(team.scored || 0).toFixed(2)}</td>
+                    <td>${(team.conceded || 0).toFixed(2)}</td>
+                    <td>${(team.xG || 0).toFixed(2)}</td>
+                    <td>${(team.xGA || 0).toFixed(2)}</td>
+                    <td>${(team.npxG || 0).toFixed(2)}</td>
+                    <td>${(team.npxGA || 0).toFixed(2)}</td>
+                    <td>${(team.xpts || 0).toFixed(2)}</td>
+                    <td>${(team.ppda || 0).toFixed(2)}</td>
+                    <td>${(team.deep || 0).toFixed(2)}</td>
                 </tr>
             `;
         }).join('');
@@ -621,7 +709,6 @@ class FPLStatHub {
         const ctx = document.getElementById('goalsChart');
         if (!ctx) return;
 
-        // Destroy existing chart if it exists
         if (this.charts.goals) {
             this.charts.goals.destroy();
         }
@@ -629,10 +716,9 @@ class FPLStatHub {
         const currentData = this.getCurrentData();
         if (currentData.length === 0) return;
 
-        // Sort by goals scored for better visualization
         const teams = [...currentData]
             .sort((a, b) => (b.scored || 0) - (a.scored || 0))
-            .slice(0, 10);
+            .slice(0, 15); // Show top 15 for better visibility
         
         this.charts.goals = new Chart(ctx, {
             type: 'bar',
@@ -675,6 +761,10 @@ class FPLStatHub {
                         title: {
                             display: true,
                             text: 'Teams'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0
                         }
                     }
                 }
@@ -695,7 +785,7 @@ class FPLStatHub {
 
         const teams = [...currentData]
             .sort((a, b) => (b.xG || 0) - (a.xG || 0))
-            .slice(0, 10);
+            .slice(0, 15);
         
         this.charts.xGoals = new Chart(ctx, {
             type: 'bar',
@@ -704,7 +794,7 @@ class FPLStatHub {
                 datasets: [
                     {
                         label: 'Expected Goals (xG)',
-                        data: teams.map(t => t.xG || 0),
+                        data: teams.map(t => parseFloat((t.xG || 0).toFixed(2))),
                         backgroundColor: '#FF6B6B'
                     },
                     {
@@ -738,6 +828,10 @@ class FPLStatHub {
                         title: {
                             display: true,
                             text: 'Teams'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0
                         }
                     }
                 }
@@ -758,7 +852,7 @@ class FPLStatHub {
 
         const teams = [...currentData]
             .sort((a, b) => (b.pts || 0) - (a.pts || 0))
-            .slice(0, 10);
+            .slice(0, 15);
         
         this.charts.points = new Chart(ctx, {
             type: 'bar',
@@ -767,7 +861,7 @@ class FPLStatHub {
                 datasets: [
                     {
                         label: 'Expected Points (xPts)',
-                        data: teams.map(t => t.xpts || 0),
+                        data: teams.map(t => parseFloat((t.xpts || 0).toFixed(2))),
                         backgroundColor: '#95E1D3'
                     },
                     {
@@ -801,6 +895,10 @@ class FPLStatHub {
                         title: {
                             display: true,
                             text: 'Teams'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0
                         }
                     }
                 }
@@ -827,7 +925,6 @@ class FPLStatHub {
         return '';
     }
 
-    // Utility method to refresh data
     async refreshData() {
         console.log('Refreshing team data...');
         await this.loadAllData();
