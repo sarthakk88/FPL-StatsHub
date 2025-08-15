@@ -271,8 +271,16 @@ class FPLStatHub {
 
         const data = this.playerData[position][view];
         console.log(`Using player data for ${position} - ${view}:`, data.length, 'players');
-        // Apply filters
-        return data
+
+        // Apply sorting if a sort column is set
+        if (this.currentSort.column) {
+            filteredData = this.sortPlayerData(data);
+        } else {
+            // Default sort by xPoints descending
+            filteredData.sort((a, b) => (b.xPoints || 0) - (a.xPoints || 0));
+        }
+
+        return filteredData;
     }
 
     setupSortListeners() {
@@ -344,6 +352,59 @@ class FPLStatHub {
             bValue = parseFloat(bValue) || 0;
 
             if (this.sortState.direction === 'asc') {
+                return aValue - bValue;
+            } else {
+                return bValue - aValue;
+            }
+        });
+    }
+
+    sortPlayerData(data) {
+        return [...data].sort((a, b) => {
+            let aValue = a[this.currentSort.column];
+            let bValue = b[this.currentSort.column];
+
+            // Handle special column mappings for player data
+            if (this.currentSort.column === 'name') {
+                // Sort by full name (first_name + second_name)
+                aValue = `${a.first_name || ''} ${a.second_name || ''}`.trim();
+                bValue = `${b.first_name || ''} ${b.second_name || ''}`.trim();
+            }
+
+            // Handle form column specifically (might be number or string)
+            if (this.currentSort.column === 'form') {
+                aValue = parseFloat(a.form) || 0;
+                bValue = parseFloat(b.form) || 0;
+            }
+
+            // Handle opponent column (team_against)
+            if (this.currentSort.column === 'opponent') {
+                aValue = a.team_against || '';
+                bValue = b.team_against || '';
+            }
+
+            // Handle Home/Away column
+            if (this.currentSort.column === 'home_away') {
+                aValue = a.Home_Away || '';
+                bValue = b.Home_Away || '';
+            }
+
+            // Handle string comparison
+            if (typeof aValue === 'string') {
+                aValue = aValue.toLowerCase();
+                bValue = (bValue || '').toLowerCase();
+                if (this.currentSort.direction === 'asc') {
+                    return aValue.localeCompare(bValue);
+                } else {
+                    return bValue.localeCompare(aValue);
+                }
+            }
+
+            // Handle numeric comparison (convert to numbers first)
+            aValue = parseFloat(aValue) || 0;
+            bValue = parseFloat(bValue) || 0;
+
+            if (this.currentSort.direction === 'asc') {
                 return aValue - bValue;
             } else {
                 return bValue - aValue;
@@ -835,24 +896,6 @@ class FPLStatHub {
         }
     }
 
-    sortData(data) {
-        if (!this.currentSort.column) return data;
-
-        return [...data].sort((a, b) => {
-            let aVal = a[this.currentSort.column];
-            let bVal = b[this.currentSort.column];
-
-            if (typeof aVal === 'string') {
-                return this.currentSort.direction === 'asc' ? 
-                    aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-            }
-
-            if (aVal === undefined || aVal === null) aVal = 0;
-            if (bVal === undefined || bVal === null) bVal = 0;
-
-            return this.currentSort.direction === 'asc' ? aVal - bVal : bVal - aVal;
-        });
-    }
 
     getPositionClass(position) {
         switch(position) {
