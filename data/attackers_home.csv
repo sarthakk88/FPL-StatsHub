@@ -1,13 +1,2 @@
-first_name,second_name,id,form,diff,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves
-Hugo,Ekitiké,661,9.0,"<bound method Series.diff of can_transact                          True
-can_select                            True
-chance_of_playing_next_round           NaN
-chance_of_playing_this_round           NaN
-code                                510663
-                                   ...    
-clean_sheets_per_90                    0.0
-defensive_contribution_per_90         1.32
-team_name                        Liverpool
-Home/Away                             Away
-team_against                     Newcastle
-Name: 409, Length: 104, dtype: object>",Newcastle,Away,70.0,1.35,0.025714285714285714,1.5685714285714285,8.048571428571428,11.571428571428571,1.2857142857142856,1.2857142857142856,0.0,1.2857142857142856,0.0,0.0
+first_name,second_name,form,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves
+Hugo,Ekitiké,9.0,Newcastle,Away,71.0,1.3309859154929577,0.02535211267605634,1.787323943661972,7.9352112676056334,11.408450704225352,1.267605633802817,1.267605633802817,0.0,1.267605633802817,0.0,0.0

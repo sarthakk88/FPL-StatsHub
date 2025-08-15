@@ -1,49 +1,7 @@
-first_name,second_name,id,form,diff,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves
-Marcos,Senesi Barón,72,1.0,"<bound method Series.diff of can_transact                            True
-can_select                              True
-chance_of_playing_next_round             NaN
-chance_of_playing_this_round             NaN
-code                                  221466
-                                    ...     
-clean_sheets_per_90                      0.0
-defensive_contribution_per_90          11.91
-team_name                        Bournemouth
-Home/Away                               Home
-team_against                          Wolves
-Name: 114, Length: 104, dtype: object>",Wolves,Home,64.0,0.0,0.0,2.4328125,2.8125,1.40625,0.0,0.0,0.0,2.8125,0.0,0.0
-Adam,Smith,73,1.0,"<bound method Series.diff of can_transact                            True
-can_select                              True
-chance_of_playing_next_round             NaN
-chance_of_playing_this_round             NaN
-code                                   54469
-                                    ...     
-clean_sheets_per_90                      0.0
-defensive_contribution_per_90           9.26
-team_name                        Bournemouth
-Home/Away                               Home
-team_against                          Wolves
-Name: 115, Length: 104, dtype: object>",Wolves,Home,66.0,0.0,0.1090909090909091,2.3590909090909093,3.054545454545455,1.3636363636363638,0.0,0.0,0.0,2.7272727272727275,0.0,0.0
-Virgil,van Dijk,373,4.0,"<bound method Series.diff of can_transact                          True
-can_select                            True
-chance_of_playing_next_round           NaN
-chance_of_playing_this_round           NaN
-code                                 97032
-                                   ...    
-clean_sheets_per_90                    0.0
-defensive_contribution_per_90        15.88
-team_name                        Liverpool
-Home/Away                             Away
-team_against                     Newcastle
-Name: 383, Length: 104, dtype: object>",Newcastle,Away,68.0,0.2647058823529412,0.013235294117647059,1.6147058823529412,4.275,5.294117647058823,0.0,0.0,0.0,1.3235294117647058,0.0,0.0
-Ibrahima,Konaté,374,2.0,"<bound method Series.diff of can_transact                          True
-can_select                            True
-chance_of_playing_next_round           NaN
-chance_of_playing_this_round           NaN
-code                                204716
-                                   ...    
-clean_sheets_per_90                    0.0
-defensive_contribution_per_90         7.94
-team_name                        Liverpool
-Home/Away                             Away
-team_against                     Newcastle
-Name: 384, Length: 104, dtype: object>",Newcastle,Away,66.0,0.0,0.0,1.6636363636363638,2.7272727272727275,2.7272727272727275,0.0,0.0,0.0,1.3636363636363638,0.0,0.0
+first_name,second_name,form,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves
+Marcos,Senesi Barón,1.0,Wolves,Home,69.0,0.0,0.0,2.2565217391304344,2.608695652173913,1.3043478260869565,0.0,0.0,0.0,2.608695652173913,0.0,0.0
+Adam,Smith,1.0,Wolves,Home,75.0,0.0,0.096,2.1,2.688,1.2,0.0,0.0,0.0,2.4,0.0,0.0
+Adrien,Truffert,1.0,Wolves,Home,76.0,0.0,0.15394736842105264,2.0723684210526314,2.830263157894737,1.1842105263157894,0.0,0.0,0.0,2.3684210526315788,0.0,0.0
+Bafodé,Diakité,1.0,Wolves,Home,71.0,0.0,0.0,2.2183098591549295,2.535211267605634,1.267605633802817,0.0,0.0,0.0,2.535211267605634,0.0,0.0
+Virgil,van Dijk,4.0,Newcastle,Away,76.0,0.2368421052631579,0.011842105263157895,1.9302631578947367,3.8250000000000006,3.5526315789473686,0.0,0.0,0.0,2.3684210526315788,0.0,0.0
+Ibrahima,Konaté,2.0,Newcastle,Away,76.0,0.0,0.0,1.9302631578947367,2.3684210526315788,1.1842105263157894,0.0,0.0,0.0,2.3684210526315788,0.0,0.0
