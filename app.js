@@ -261,27 +261,27 @@ class FPLStatHub {
     }
 
     getPlayerData() {
-        const position = this.currentPlayerPosition;  // e.g., 'goalkeepers'
-        const view = this.selectedView || 'all';     // fallback to 'all'
+        const position = this.currentPlayerPosition;
+        const view = this.selectedView || 'all';
 
         if (!this.playerData[position] || !this.playerData[position][view]) {
             console.warn(`No player data for position=${position}, view=${view}`);
             return [];
         }
 
-        const data = this.playerData[position][view];
+        let data = this.playerData[position][view]; // ✅ Use let
         console.log(`Using player data for ${position} - ${view}:`, data.length, 'players');
 
         // Apply sorting if a sort column is set
         if (this.currentSort.column) {
-            filteredData = this.sortPlayerData(data);
+            data = this.sortPlayerData(data); // ✅ Fixed
         } else {
-            // Default sort by xPoints descending
-            filteredData.sort((a, b) => (b.xPoints || 0) - (a.xPoints || 0));
+            data = data.sort((a, b) => (b.xPoints || 0) - (a.xPoints || 0)); // ✅ Fixed
         }
 
-        return filteredData;
+        return data;
     }
+
 
     setupSortListeners() {
         document.addEventListener('click', (e) => {
