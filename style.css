@@ -1334,3 +1334,40 @@ body {
 .table-container::-webkit-scrollbar-thumb:hover {
   background: var(--color-primary-hover);
 }
+
+.champions-league {
+    border-left: 4px solid #4CAF50;
+}
+
+.europa-league {
+    border-left: 4px solid #FF9800;
+}
+
+.relegation {
+    border-left: 4px solid #f44336;
+}
+
+.team-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.position {
+    font-weight: bold;
+    min-width: 20px;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.chart-card {
+    margin-bottom: 30px;
+}
+
+.team-charts {
+    margin-top: 30px;
+}

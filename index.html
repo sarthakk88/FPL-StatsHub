@@ -139,39 +139,42 @@
                             <label class="form-label">View</label>
                             <select id="statsViewFilter" class="form-control">
                                 <option value="all">All Fixtures</option>
+                                <option value="last5">Last 5 Fixtures</option>
                                 <option value="home">Home Only</option>
+                                <option value="last5_home">Last 5 Home</option>
                                 <option value="away">Away Only</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label class="form-label">Sort By</label>
-                            <select id="statsSortFilter" class="form-control">
-                                <option value="position">Position</option>
-                                <option value="points">Points</option>
-                                <option value="goals_for">Goals For</option>
-                                <option value="xG">Expected Goals</option>
+                                <option value="last5_away">Last 5 Away</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
                 <div class="league-table">
-                    <h3>Premier League Table</h3>
+                    <h3 id="tableTitle">Premier League Table</h3>
                     <div class="table-container">
                         <table class="stats-table">
                             <thead>
                                 <tr>
-                                    <th data-sort="position">Pos</th>
-                                    <th data-sort="name">Team</th>
-                                    <th data-sort="points">Pts</th>
-                                    <th data-sort="goals_for">GF</th>
-                                    <th data-sort="goals_against">GA</th>
-                                    <th data-sort="xG">xG</th>
-                                    <th data-sort="xGA">xGA</th>
-                                    <th data-sort="clean_sheets">CS</th>
+                                    <th>Team</th>
+                                    <th>Pts</th>
+                                    <th>W</th>
+                                    <th>D</th>
+                                    <th>L</th>
+                                    <th>GF</th>
+                                    <th>GA</th>
+                                    <th>xG</th>
+                                    <th>xGA</th>
+                                    <th>npxG</th>
+                                    <th>npxGA</th>
+                                    <th>xPts</th>
+                                    <th>PPDA</th>
+                                    <th>Deep</th>
                                 </tr>
                             </thead>
                             <tbody id="leagueTable">
+                                <tr>
+                                    <td colspan="14" class="loading">Loading team data...</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -184,8 +187,23 @@
                             <canvas id="goalsChart"></canvas>
                         </div>
                     </div>
+                    
+                    <div class="chart-card">
+                        <h3>Expected Goals vs Actual Goals</h3>
+                        <div class="chart-container" style="position: relative; height: 400px;">
+                            <canvas id="xGoalsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>Expected Points vs Actual Points</h3>
+                        <div class="chart-container" style="position: relative; height: 400px;">
+                            <canvas id="pointsChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 

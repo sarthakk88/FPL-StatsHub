@@ -11,9 +11,19 @@ class FPLStatHub {
             xPoints: 0,
             venue: 'all'
         };
+        this.teamData = {
+            all: null,
+            last5: null,
+            home: null,
+            last5_home: null,
+            away: null,
+            last5_away: null
+        };
+
         this.currentSort = { column: null, direction: 'desc' };
-        this.charts = {};
-        
+        this.currentView = 'all'; ///Teams
+        this.charts = {}; ///Teams
+        this.dataFolder = 'data/'; ///Teams
         this.init();
     }
 
@@ -81,35 +91,87 @@ class FPLStatHub {
                 {"name":"Ivan Toney","team":"Brentford","price":7.2,"points":141,"form":6.3,"xG":0.58,"xA":0.14,"xPoints":6.1,"minutes":2543,"opponent":"Southampton","homeAway":"A","goals":15,"assists":4},
                 {"name":"Callum Wilson","team":"Newcastle","price":7.8,"points":128,"form":5.7,"xG":0.64,"xA":0.11,"xPoints":5.9,"minutes":2298,"opponent":"Brighton","homeAway":"H","goals":12,"assists":3},
                 {"name":"Alexander Isak","team":"Newcastle","price":8.5,"points":136,"form":6.1,"xG":0.59,"xA":0.13,"xPoints":6.0,"minutes":2456,"opponent":"Brighton","homeAway":"H","goals":13,"assists":3}
-            ],
-            teams: [
-                {"name":"Manchester City","goals_for":89,"goals_against":31,"xG":85.2,"xGA":29.8,"clean_sheets":18,"position":1,"points":91},
-                {"name":"Arsenal","goals_for":84,"goals_against":43,"xG":79.6,"xGA":41.2,"clean_sheets":15,"position":2,"points":84},
-                {"name":"Liverpool","goals_for":86,"goals_against":41,"xG":82.1,"xGA":38.9,"clean_sheets":16,"position":3,"points":82},
-                {"name":"Newcastle United","goals_for":68,"goals_against":56,"xG":64.3,"xGA":52.7,"clean_sheets":11,"position":4,"points":71},
-                {"name":"Manchester United","goals_for":58,"goals_against":57,"xG":61.4,"xGA":54.8,"clean_sheets":9,"position":5,"points":66},
-                {"name":"Chelsea","goals_for":55,"goals_against":49,"xG":60.2,"xGA":48.3,"clean_sheets":10,"position":6,"points":64},
-                {"name":"Tottenham","goals_for":70,"goals_against":63,"xG":68.5,"xGA":58.2,"clean_sheets":8,"position":7,"points":60},
-                {"name":"Brighton","goals_for":52,"goals_against":54,"xG":58.7,"xGA":52.1,"clean_sheets":9,"position":8,"points":58},
-                {"name":"Aston Villa","goals_for":61,"goals_against":58,"xG":56.8,"xGA":55.3,"clean_sheets":7,"position":9,"points":55},
-                {"name":"West Ham","goals_for":48,"goals_against":62,"xG":52.3,"xGA":59.1,"clean_sheets":6,"position":10,"points":52},
-                {"name":"Brentford","goals_for":54,"goals_against":61,"xG":51.2,"xGA":58.7,"clean_sheets":8,"position":11,"points":49},
-                {"name":"Fulham","goals_for":50,"goals_against":59,"xG":49.8,"xGA":56.4,"clean_sheets":7,"position":12,"points":47},
-                {"name":"Crystal Palace","goals_for":40,"goals_against":56,"xG":45.7,"xGA":54.2,"clean_sheets":6,"position":13,"points":45},
-                {"name":"Wolves","goals_for":38,"goals_against":58,"xG":43.1,"xGA":55.9,"clean_sheets":5,"position":14,"points":42},
-                {"name":"Everton","goals_for":34,"goals_against":57,"xG":41.2,"xGA":56.8,"clean_sheets":4,"position":15,"points":39},
-                {"name":"Nottingham Forest","goals_for":36,"goals_against":64,"xG":39.8,"xGA":61.3,"clean_sheets":3,"position":16,"points":38},
-                {"name":"Luton Town","goals_for":35,"goals_against":65,"xG":38.4,"xGA":62.1,"clean_sheets":4,"position":17,"points":35},
-                {"name":"Burnley","goals_for":32,"goals_against":68,"xG":36.2,"xGA":64.5,"clean_sheets":2,"position":18,"points":32},
-                {"name":"Sheffield United","goals_for":28,"goals_against":78,"xG":33.1,"xGA":71.2,"clean_sheets":1,"position":19,"points":28},
-                {"name":"Southampton","goals_for":31,"goals_against":75,"xG":35.6,"xGA":69.8,"clean_sheets":2,"position":20,"points":25}
             ]
         };
     }
 
-    init() {
+    async init() {
+        await this.loadAllData();
         this.setupEventListeners();
         this.renderCurrentTab();
+        this.renderTeamStats();
+    }
+
+        async loadAllData() {
+        const dataFiles = {
+            all: 'team_all_matches.csv',
+            last5: 'team_last5_matches.csv',
+            home: 'team_all_home_matches.csv',
+            last5_home: 'team_last5_home_matches.csv',
+            away: 'team_all_away_matches.csv',
+            last5_away: 'team_last5_away_matches.csv'
+        };
+
+        try {
+            console.log('Loading team data from folder:', this.dataFolder);
+            
+            const loadPromises = Object.entries(dataFiles).map(async ([key, filename]) => {
+                const filepath = `${this.dataFolder}${filename}`;
+                console.log(`Loading ${key} data from:`, filepath);
+                
+                try {
+                    const response = await fetch(filepath);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const csvText = await response.text();
+                    this.teamData[key] = this.parseCSV(csvText);
+                    console.log(`Successfully loaded ${key} data:`, this.teamData[key].length, 'teams');
+                } catch (error) {
+                    console.error(`Error loading ${key} data from ${filepath}:`, error);
+                    this.teamData[key] = []; // Set empty array as fallback
+                }
+            });
+
+            await Promise.all(loadPromises);
+            console.log('All team data loaded successfully');
+            
+        } catch (error) {
+            console.error('Error in loadAllData:', error);
+        }
+    }
+
+    parseCSV(csvText) {
+        if (!csvText || csvText.trim() === '') {
+            console.warn('Empty CSV data received');
+            return [];
+        }
+
+        const lines = csvText.trim().split('\n');
+        if (lines.length < 2) {
+            console.warn('CSV has insufficient data');
+            return [];
+        }
+
+        const headers = lines[0].split(',').map(h => h.trim());
+        console.log('CSV headers:', headers);
+        
+        return lines.slice(1).map((line, index) => {
+            const values = line.split(',').map(v => v.trim());
+            const row = {};
+            
+            headers.forEach((header, headerIndex) => {
+                const value = values[headerIndex] || '';
+                // Convert numeric values, handling potential parsing errors
+                if (!isNaN(value) && value !== '' && value !== 'N/A') {
+                    row[header] = parseFloat(value);
+                } else {
+                    row[header] = value;
+                }
+            });
+            
+            return row;
+        }).filter(row => row.team && row.team !== ''); // Filter out empty rows
     }
 
     setupEventListeners() {
@@ -144,6 +206,73 @@ class FPLStatHub {
                 this.switchPlayerPosition(e.target.dataset.position);
             }
         });
+
+        const viewFilter = document.getElementById('statsViewFilter');
+        if (viewFilter) {
+            viewFilter.addEventListener('change', (e) => {
+                this.currentView = e.target.value;
+                console.log('View changed to:', this.currentView);
+                this.updateTableTitle();
+                this.renderTeamStats();
+            });
+        }
+    }
+
+        getCurrentData() {
+        const data = this.teamData[this.currentView];
+        if (!data || data.length === 0) {
+            console.warn(`No data available for view: ${this.currentView}`);
+            return [];
+        }
+        console.log(`Using ${this.currentView} data:`, data.length, 'teams');
+        return data;
+    }
+
+    updateTableTitle() {
+        const titleElement = document.getElementById('tableTitle');
+        if (!titleElement) return;
+
+        const titleMap = {
+            all: 'Premier League Table - All Fixtures',
+            last5: 'Premier League Form - Last 5 Fixtures', 
+            home: 'Premier League Table - Home Only',
+            last5_home: 'Premier League Form - Last 5 Home',
+            away: 'Premier League Table - Away Only',
+            last5_away: 'Premier League Form - Last 5 Away'
+        };
+
+        titleElement.textContent = titleMap[this.currentView] || 'Premier League Table';
+    }
+
+    renderTeamStats() {
+        const currentData = this.getCurrentData();
+        
+        if (currentData.length === 0) {
+            this.showNoDataMessage();
+            return;
+        }
+
+        this.renderLeagueTable();
+        
+        // Delay chart rendering to ensure canvas is visible
+        setTimeout(() => {
+            this.renderGoalsChart();
+            this.renderXGoalsChart(); 
+            this.renderPointsChart();
+        }, 100);
+    }
+
+    showNoDataMessage() {
+        const tbody = document.getElementById('leagueTable');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="14" class="no-data">
+                        No data available for ${this.currentView} view. Please check if the data files are properly loaded.
+                    </td>
+                </tr>
+            `;
+        }
     }
 
     setupFilters() {
@@ -447,34 +576,42 @@ class FPLStatHub {
         }
     }
 
-    renderTeamStats() {
-        this.renderLeagueTable();
-        
-        // Delay chart rendering to ensure canvas is visible
-        setTimeout(() => {
-            this.renderGoalsChart();
-        }, 100);
-    }
-
     renderLeagueTable() {
         const tbody = document.getElementById('leagueTable');
         if (!tbody) return;
 
-        const teams = [...this.data.teams].sort((a, b) => a.position - b.position);
+        const currentData = this.getCurrentData();
+        if (currentData.length === 0) {
+            this.showNoDataMessage();
+            return;
+        }
 
-        tbody.innerHTML = teams.map(team => {
-            const positionClass = this.getLeaguePositionClass(team.position);
+        // Sort by points (descending) for league table display
+        const sortedData = [...currentData].sort((a, b) => (b.pts || 0) - (a.pts || 0));
+
+        tbody.innerHTML = sortedData.map((team, index) => {
+            const position = index + 1;
+            const positionClass = this.getLeaguePositionClass(position);
             
             return `
-                <tr>
-                    <td><span class="league-position ${positionClass}">${team.position}</span></td>
-                    <td><span class="team-name">${team.name}</span></td>
-                    <td><strong>${team.points}</strong></td>
-                    <td>${team.goals_for}</td>
-                    <td>${team.goals_against}</td>
-                    <td>${team.xG.toFixed(1)}</td>
-                    <td>${team.xGA.toFixed(1)}</td>
-                    <td>${team.clean_sheets}</td>
+                <tr class="${positionClass}">
+                    <td>
+                        <span class="league-position ${positionClass}">${position}</span>
+                        <span class="team-name">${team.team || 'N/A'}</span>
+                    </td>
+                    <td><strong>${team.pts || 0}</strong></td>
+                    <td>${team.wins || 0}</td>
+                    <td>${team.draws || 0}</td>
+                    <td>${team.loses || 0}</td>
+                    <td>${team.scored || 0}</td>
+                    <td>${team.conceded || 0}</td>
+                    <td>${(team.xG || 0).toFixed(1)}</td>
+                    <td>${(team.xGA || 0).toFixed(1)}</td>
+                    <td>${(team.npxG || 0).toFixed(1)}</td>
+                    <td>${(team.npxGA || 0).toFixed(1)}</td>
+                    <td>${(team.xpts || 0).toFixed(1)}</td>
+                    <td>${(team.ppda || 0).toFixed(1)}</td>
+                    <td>${team.deep || 0}</td>
                 </tr>
             `;
         }).join('');
@@ -489,21 +626,27 @@ class FPLStatHub {
             this.charts.goals.destroy();
         }
 
-        const teams = this.data.teams.slice(0, 10); // Top 10 teams
+        const currentData = this.getCurrentData();
+        if (currentData.length === 0) return;
+
+        // Sort by goals scored for better visualization
+        const teams = [...currentData]
+            .sort((a, b) => (b.scored || 0) - (a.scored || 0))
+            .slice(0, 10);
         
         this.charts.goals = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: teams.map(t => t.name.replace(' United', ' Utd').replace(' City', '')),
+                labels: teams.map(t => (t.team || '').replace(' United', ' Utd').replace(' City', '')),
                 datasets: [
                     {
                         label: 'Goals For',
-                        data: teams.map(t => t.goals_for),
+                        data: teams.map(t => t.scored || 0),
                         backgroundColor: '#1FB8CD'
                     },
                     {
                         label: 'Goals Against',
-                        data: teams.map(t => t.goals_against),
+                        data: teams.map(t => t.conceded || 0),
                         backgroundColor: '#B4413C'
                     }
                 ]
@@ -514,6 +657,10 @@ class FPLStatHub {
                 plugins: {
                     legend: {
                         position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: `Goals Comparison - ${this.getViewDisplayName()}`
                     }
                 },
                 scales: {
@@ -535,6 +682,158 @@ class FPLStatHub {
         });
     }
 
+    renderXGoalsChart() {
+        const ctx = document.getElementById('xGoalsChart');
+        if (!ctx) return;
+
+        if (this.charts.xGoals) {
+            this.charts.xGoals.destroy();
+        }
+
+        const currentData = this.getCurrentData();
+        if (currentData.length === 0) return;
+
+        const teams = [...currentData]
+            .sort((a, b) => (b.xG || 0) - (a.xG || 0))
+            .slice(0, 10);
+        
+        this.charts.xGoals = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: teams.map(t => (t.team || '').replace(' United', ' Utd').replace(' City', '')),
+                datasets: [
+                    {
+                        label: 'Expected Goals (xG)',
+                        data: teams.map(t => t.xG || 0),
+                        backgroundColor: '#FF6B6B'
+                    },
+                    {
+                        label: 'Actual Goals',
+                        data: teams.map(t => t.scored || 0),
+                        backgroundColor: '#4ECDC4'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: `Expected vs Actual Goals - ${this.getViewDisplayName()}`
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Goals'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Teams'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    renderPointsChart() {
+        const ctx = document.getElementById('pointsChart');
+        if (!ctx) return;
+
+        if (this.charts.points) {
+            this.charts.points.destroy();
+        }
+
+        const currentData = this.getCurrentData();
+        if (currentData.length === 0) return;
+
+        const teams = [...currentData]
+            .sort((a, b) => (b.pts || 0) - (a.pts || 0))
+            .slice(0, 10);
+        
+        this.charts.points = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: teams.map(t => (t.team || '').replace(' United', ' Utd').replace(' City', '')),
+                datasets: [
+                    {
+                        label: 'Expected Points (xPts)',
+                        data: teams.map(t => t.xpts || 0),
+                        backgroundColor: '#95E1D3'
+                    },
+                    {
+                        label: 'Actual Points',
+                        data: teams.map(t => t.pts || 0),
+                        backgroundColor: '#F38BA8'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: `Expected vs Actual Points - ${this.getViewDisplayName()}`
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Points'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Teams'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    getViewDisplayName() {
+        const displayNames = {
+            all: 'All Fixtures',
+            last5: 'Last 5 Fixtures',
+            home: 'Home Only',
+            last5_home: 'Last 5 Home',
+            away: 'Away Only',
+            last5_away: 'Last 5 Away'
+        };
+        return displayNames[this.currentView] || this.currentView;
+    }
+
+    getLeaguePositionClass(position) {
+        if (position <= 4) return 'champions-league';
+        if (position <= 6) return 'europa-league';
+        if (position >= 18) return 'relegation';
+        return '';
+    }
+
+    // Utility method to refresh data
+    async refreshData() {
+        console.log('Refreshing team data...');
+        await this.loadAllData();
+        this.renderTeamStats();
+    }
+    
     filterPlayerData(data) {
         return data.filter(player => {
             return player.minutes >= this.filters.minutes &&
