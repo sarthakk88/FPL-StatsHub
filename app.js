@@ -687,7 +687,7 @@ class FPLStatHub {
                     <td class="sticky-column">
                         <span class="team-name">${team.team || 'N/A'}</span>
                     </td>
-                    <td><strong>${team.pts || 0}</strong></td>
+                    <td><strong>${(team.pts || 0).toFixed(2)}</strong></td>
                     <td>${(team.wins || 0).toFixed(2)}</td>
                     <td>${(team.draws || 0).toFixed(2)}</td>
                     <td>${(team.loses || 0).toFixed(2)}</td>
@@ -930,7 +930,7 @@ class FPLStatHub {
         await this.loadAllData();
         this.renderTeamStats();
     }
-    
+
     filterPlayerData(data) {
         return data.filter(player => {
             return player.minutes >= this.filters.minutes &&
