@@ -338,9 +338,7 @@ class FPLStatHub {
         
         // Delay chart rendering to ensure canvas is visible
         setTimeout(() => {
-            this.renderGoalsChart();
-            this.renderXGoalsChart(); 
-            this.renderPointsChart();
+            this.renderNpxChart();
         }, 100);
     }
 
@@ -708,205 +706,43 @@ class FPLStatHub {
         }).join('');
     }
 
-    renderGoalsChart() {
-        const ctx = document.getElementById('goalsChart');
-        if (!ctx) return;
+    renderNpxChart() {
+    const ctx = document.getElementById('npxChart');
+    if (!ctx) return;
+    if (this.charts.npx) this.charts.npx.destroy();
 
-        if (this.charts.goals) {
-            this.charts.goals.destroy();
-        }
+    const data = this.getCurrentData();
+    if (!data.length) return;
 
-        const currentData = this.getCurrentData();
-        if (currentData.length === 0) return;
+    // Scatter data points
+    const points = data.map(team => ({
+        x: team.npxG || 0,
+        y: team.npxGA || 0,
+        label: team.team
+    }));
 
-        const teams = [...currentData]
-            .sort((a, b) => (b.scored || 0) - (a.scored || 0))
-            .slice(0, 15); // Show top 15 for better visibility
-        
-        this.charts.goals = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: teams.map(t => (t.team || '').replace(' United', ' Utd').replace(' City', '')),
-                datasets: [
-                    {
-                        label: 'Goals For',
-                        data: teams.map(t => t.scored || 0),
-                        backgroundColor: '#1FB8CD'
-                    },
-                    {
-                        label: 'Goals Against',
-                        data: teams.map(t => t.conceded || 0),
-                        backgroundColor: '#B4413C'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    },
-                    title: {
-                        display: true,
-                        text: `Goals Comparison - ${this.getViewDisplayName()}`
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Goals'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Teams'
-                        },
-                        ticks: {
-                            maxRotation: 45,
-                            minRotation: 0
-                        }
-                    }
+    this.charts.npx = new Chart(ctx, {
+        type: 'scatter',
+        data: { datasets: [{ label: 'Teams', data: points, backgroundColor: 'rgba(33,128,141,0.6)' }] },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            tooltip: {
+            callbacks: {
+                label(ctx) {
+                const p = ctx.raw;
+                return `${p.label}: npxG ${p.x.toFixed(2)}, npxGA ${p.y.toFixed(2)}`;
                 }
             }
-        });
-    }
-
-    renderXGoalsChart() {
-        const ctx = document.getElementById('xGoalsChart');
-        if (!ctx) return;
-
-        if (this.charts.xGoals) {
-            this.charts.xGoals.destroy();
-        }
-
-        const currentData = this.getCurrentData();
-        if (currentData.length === 0) return;
-
-        const teams = [...currentData]
-            .sort((a, b) => (b.xG || 0) - (a.xG || 0))
-            .slice(0, 15);
-        
-        this.charts.xGoals = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: teams.map(t => (t.team || '').replace(' United', ' Utd').replace(' City', '')),
-                datasets: [
-                    {
-                        label: 'Expected Goals (xG)',
-                        data: teams.map(t => parseFloat((t.xG || 0).toFixed(2))),
-                        backgroundColor: '#FF6B6B'
-                    },
-                    {
-                        label: 'Actual Goals',
-                        data: teams.map(t => t.scored || 0),
-                        backgroundColor: '#4ECDC4'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    },
-                    title: {
-                        display: true,
-                        text: `Expected vs Actual Goals - ${this.getViewDisplayName()}`
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Goals'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Teams'
-                        },
-                        ticks: {
-                            maxRotation: 45,
-                            minRotation: 0
-                        }
-                    }
-                }
             }
-        });
-    }
-
-    renderPointsChart() {
-        const ctx = document.getElementById('pointsChart');
-        if (!ctx) return;
-
-        if (this.charts.points) {
-            this.charts.points.destroy();
+        },
+        scales: {
+            x: { title: { display: true, text: 'Non-Penalty xG' } },
+            y: { title: { display: true, text: 'Non-Penalty xGA' }, reverse: true }
         }
-
-        const currentData = this.getCurrentData();
-        if (currentData.length === 0) return;
-
-        const teams = [...currentData]
-            .sort((a, b) => (b.pts || 0) - (a.pts || 0))
-            .slice(0, 15);
-        
-        this.charts.points = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: teams.map(t => (t.team || '').replace(' United', ' Utd').replace(' City', '')),
-                datasets: [
-                    {
-                        label: 'Expected Points (xPts)',
-                        data: teams.map(t => parseFloat((t.xpts || 0).toFixed(2))),
-                        backgroundColor: '#95E1D3'
-                    },
-                    {
-                        label: 'Actual Points',
-                        data: teams.map(t => t.pts || 0),
-                        backgroundColor: '#F38BA8'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    },
-                    title: {
-                        display: true,
-                        text: `Expected vs Actual Points - ${this.getViewDisplayName()}`
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Points'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Teams'
-                        },
-                        ticks: {
-                            maxRotation: 45,
-                            minRotation: 0
-                        }
-                    }
-                }
-            }
-        });
+        }
+    });
     }
 
     getViewDisplayName() {
