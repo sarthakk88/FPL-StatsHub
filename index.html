@@ -14,12 +14,6 @@
             <div class="header-content">
                 <h1 class="header-title">FPL StatHub</h1>
                 <p class="header-subtitle">Fantasy Premier League Analytics Dashboard</p>
-                <div class="header-meta">
-                    <span class="data-status">
-                        <span class="status-dot"></span>
-                        <span>Live Data Connected</span>
-                    </span>
-                </div>
             </div>
         </header>
 
@@ -101,26 +95,14 @@
                 <div class="filters-section">
                     <div class="filters-grid">
                         <div class="filter-group">
-                            <label class="form-label">Min Minutes</label>
-                            <input type="range" id="minutesFilter" min="0" max="3500" value="500" class="range-input">
-                            <span class="range-value" id="minutesValue">500</span>
-                        </div>
-                        <div class="filter-group">
-                            <label class="form-label">Form Rating</label>
-                            <input type="range" id="formFilter" min="0" max="10" value="0" step="0.1" class="range-input">
-                            <span class="range-value" id="formValue">0.0+</span>
-                        </div>
-                        <div class="filter-group">
-                            <label class="form-label">xPoints</label>
-                            <input type="range" id="xPointsFilter" min="0" max="15" value="0" step="0.1" class="range-input">
-                            <span class="range-value" id="xPointsValue">0.0+</span>
-                        </div>
-                        <div class="filter-group">
-                            <label class="form-label">Venue</label>
+                            <label class="form-label">View</label>
                             <select id="venueFilter" class="form-control">
-                                <option value="all">All Games</option>
+                                <option value="all">All Fixtures</option>
+                                <option value="last5">Last 5 Fixtures</option>
                                 <option value="home">Home Only</option>
+                                <option value="last5_home">Last 5 Home</option>
                                 <option value="away">Away Only</option>
+                                <option value="last5_away">Last 5 Away</option>
                             </select>
                         </div>
                     </div>

@@ -1,0 +1,121 @@
+first_name,second_name,id,form,diff,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves
+Antoine,Semenyo,82,7.0,"<bound method Series.diff of can_transact                            True
+can_select                              True
+chance_of_playing_next_round             NaN
+chance_of_playing_this_round             NaN
+code                                  437730
+                                    ...     
+clean_sheets_per_90                      0.0
+defensive_contribution_per_90           6.62
+team_name                        Bournemouth
+Home/Away                               Home
+team_against                          Wolves
+Name: 124, Length: 104, dtype: object>",Wolves,Home,68.0,0.886764705882353,0.013235294117647059,2.289705882352941,7.120588235294118,9.264705882352942,1.3235294117647058,0.0,0.0,2.6470588235294117,0.0,0.0
+Marcus,Tavernier,84,4.0,"<bound method Series.diff of can_transact                            True
+can_select                              True
+chance_of_playing_next_round             NaN
+chance_of_playing_this_round             NaN
+code                                  201658
+                                    ...     
+clean_sheets_per_90                      0.0
+defensive_contribution_per_90          15.88
+team_name                        Bournemouth
+Home/Away                               Home
+team_against                          Wolves
+Name: 126, Length: 104, dtype: object>",Wolves,Home,68.0,0.4235294117647059,0.039705882352941174,2.289705882352941,4.883823529411766,5.294117647058823,0.0,0.0,0.0,2.6470588235294117,0.0,0.0
+Tyler,Adams,85,4.0,"<bound method Series.diff of can_transact                            True
+can_select                              True
+chance_of_playing_next_round             NaN
+chance_of_playing_this_round             NaN
+code                                  200785
+                                    ...     
+clean_sheets_per_90                      0.0
+defensive_contribution_per_90          19.85
+team_name                        Bournemouth
+Home/Away                               Home
+team_against                          Wolves
+Name: 127, Length: 104, dtype: object>",Wolves,Home,68.0,0.0,0.0,2.289705882352941,2.6470588235294117,5.294117647058823,0.0,0.0,0.0,2.6470588235294117,0.0,0.0
+David,Brooks,86,4.0,"<bound method Series.diff of can_transact                            True
+can_select                              True
+chance_of_playing_next_round             NaN
+chance_of_playing_this_round             NaN
+code                                  111317
+                                    ...     
+clean_sheets_per_90                      0.0
+defensive_contribution_per_90           9.26
+team_name                        Bournemouth
+Home/Away                               Home
+team_against                          Wolves
+Name: 128, Length: 104, dtype: object>",Wolves,Home,68.0,0.039705882352941174,0.23823529411764705,2.289705882352941,2.236764705882353,5.294117647058823,0.0,1.3235294117647058,0.0,2.6470588235294117,0.0,0.0
+Alex,Scott,90,2.0,"<bound method Series.diff of can_transact                            True
+can_select                              True
+chance_of_playing_next_round             NaN
+chance_of_playing_this_round             NaN
+code                                  503139
+                                    ...     
+clean_sheets_per_90                      0.0
+defensive_contribution_per_90           2.65
+team_name                        Bournemouth
+Home/Away                               Home
+team_against                          Wolves
+Name: 132, Length: 104, dtype: object>",Wolves,Home,68.0,0.0,0.0,2.289705882352941,2.6470588235294117,2.6470588235294117,0.0,0.0,0.0,2.6470588235294117,0.0,0.0
+Mohamed,Salah,381,2.0,"<bound method Series.diff of can_transact                          True
+can_select                            True
+chance_of_playing_next_round           NaN
+chance_of_playing_this_round           NaN
+code                                118748
+                                   ...    
+clean_sheets_per_90                    0.0
+defensive_contribution_per_90        11.91
+team_name                        Liverpool
+Home/Away                             Away
+team_against                     Newcastle
+Name: 391, Length: 104, dtype: object>",Newcastle,Away,69.0,0.19565217391304346,0.11739130434782608,1.5913043478260869,3.9391304347826086,2.608695652173913,0.0,0.0,0.0,1.3043478260869565,0.0,0.0
+Florian,Wirtz,382,2.0,"<bound method Series.diff of can_transact                          True
+can_select                            True
+chance_of_playing_next_round           NaN
+chance_of_playing_this_round           NaN
+code                                494595
+                                   ...    
+clean_sheets_per_90                    0.0
+defensive_contribution_per_90         9.26
+team_name                        Liverpool
+Home/Away                             Away
+team_against                     Newcastle
+Name: 392, Length: 104, dtype: object>",Newcastle,Away,69.0,0.1826086956521739,0.3391304347826087,1.5913043478260869,4.539130434782608,2.608695652173913,0.0,0.0,0.0,1.3043478260869565,0.0,0.0
+Cody,Gakpo,384,7.0,"<bound method Series.diff of can_transact                          True
+can_select                            True
+chance_of_playing_next_round           NaN
+chance_of_playing_this_round           NaN
+code                                243298
+                                   ...    
+clean_sheets_per_90                    0.0
+defensive_contribution_per_90         5.29
+team_name                        Liverpool
+Home/Away                             Away
+team_against                     Newcastle
+Name: 394, Length: 104, dtype: object>",Newcastle,Away,69.0,0.15652173913043477,0.5739130434782609,1.5913043478260869,5.113043478260869,9.130434782608695,1.3043478260869565,0.0,0.0,1.3043478260869565,0.0,0.0
+Alexis,Mac Allister,386,5.0,"<bound method Series.diff of can_transact                          True
+can_select                            True
+chance_of_playing_next_round           NaN
+chance_of_playing_this_round           NaN
+code                                243016
+                                   ...    
+clean_sheets_per_90                    0.0
+defensive_contribution_per_90         7.94
+team_name                        Liverpool
+Home/Away                             Away
+team_against                     Newcastle
+Name: 396, Length: 104, dtype: object>",Newcastle,Away,69.0,0.05217391304347826,0.02608695652173913,1.5913043478260869,2.947826086956521,6.521739130434782,0.0,1.3043478260869565,0.0,1.3043478260869565,0.0,0.0
+Dominik,Szoboszlai,387,2.0,"<bound method Series.diff of can_transact                          True
+can_select                            True
+chance_of_playing_next_round           NaN
+chance_of_playing_this_round           NaN
+code                                424876
+                                   ...    
+clean_sheets_per_90                    0.0
+defensive_contribution_per_90         9.26
+team_name                        Liverpool
+Home/Away                             Away
+team_against                     Newcastle
+Name: 397, Length: 104, dtype: object>",Newcastle,Away,65.0,0.013846153846153847,0.09692307692307693,1.6892307692307693,3.129230769230769,2.769230769230769,0.0,0.0,0.0,1.3846153846153846,0.0,0.0

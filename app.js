@@ -6,10 +6,7 @@ class FPLStatHub {
         this.currentMainTab = 'my-team';
         this.currentPlayerPosition = 'goalkeepers';
         this.filters = {
-            minutes: 500,
-            form: 0,
-            xPoints: 0,
-            venue: 'all'
+            view: 'all'
         };
         this.teamData = {
             all: null,
@@ -18,7 +15,8 @@ class FPLStatHub {
             last5_home: null,
             away: null,
             last5_away: null
-        };
+        }; // For team data
+        this.playerData = {};
         this.sortState = {
             column: 'pts',
             direction: 'desc'
@@ -56,45 +54,7 @@ class FPLStatHub {
                     {"name":"Jordan Pickford","position":"GK","opponent":"MCI (A)","xPoints":4.4,"form":4.8,"captain":false,"total_points":3},
                     {"name":"Yoane Wissa","position":"FWD","opponent":"SOU (A)","xPoints":4.5,"form":4.4,"captain":false,"total_points":2}
                 ]
-            },
-            goalkeepers: [
-                {"name":"Alisson","team":"Liverpool","price":5.6,"points":142,"form":5.2,"xG":0.0,"xA":0.0,"xPoints":4.8,"minutes":3240,"opponent":"Arsenal","homeAway":"H","cleanSheets":18,"saves":95,"xGC":28.5},
-                {"name":"Jordan Pickford","team":"Everton","price":5.0,"points":138,"form":4.8,"xG":0.0,"xA":0.0,"xPoints":4.2,"minutes":3150,"opponent":"Man City","homeAway":"A","cleanSheets":12,"saves":108,"xGC":45.2},
-                {"name":"Aaron Ramsdale","team":"Arsenal","price":5.2,"points":135,"form":5.0,"xG":0.0,"xA":0.0,"xPoints":4.6,"minutes":2880,"opponent":"Liverpool","homeAway":"A","cleanSheets":14,"saves":89,"xGC":35.1},
-                {"name":"Nick Pope","team":"Newcastle","price":5.1,"points":140,"form":5.3,"xG":0.0,"xA":0.0,"xPoints":4.9,"minutes":3060,"opponent":"Brighton","homeAway":"H","cleanSheets":16,"saves":102,"xGC":32.8},
-                {"name":"José Sá","team":"Wolves","price":4.8,"points":125,"form":4.5,"xG":0.0,"xA":0.0,"xPoints":4.1,"minutes":2970,"opponent":"Tottenham","homeAway":"A","cleanSheets":10,"saves":115,"xGC":42.3},
-                {"name":"Kepa Arrizabalaga","team":"Chelsea","price":5.3,"points":118,"form":4.2,"xG":0.0,"xA":0.0,"xPoints":3.9,"minutes":2520,"opponent":"Liverpool","homeAway":"A","cleanSheets":9,"saves":92,"xGC":38.7}
-            ],
-            defenders: [
-                {"name":"Trent Alexander-Arnold","team":"Liverpool","price":7.1,"points":158,"form":6.8,"xG":0.07,"xA":0.29,"xPoints":6.4,"minutes":2876,"opponent":"Arsenal","homeAway":"H","cleanSheets":14,"goals":2,"assists":8},
-                {"name":"Virgil van Dijk","team":"Liverpool","price":6.2,"points":134,"form":6.2,"xG":0.09,"xA":0.04,"xPoints":5.5,"minutes":3298,"opponent":"Arsenal","homeAway":"H","cleanSheets":16,"goals":3,"assists":1},
-                {"name":"John Stones","team":"Man City","price":5.8,"points":125,"form":5.1,"xG":0.05,"xA":0.02,"xPoints":5.0,"minutes":2654,"opponent":"Burnley","homeAway":"H","cleanSheets":19,"goals":1,"assists":2},
-                {"name":"William Saliba","team":"Arsenal","price":5.9,"points":142,"form":6.1,"xG":0.08,"xA":0.03,"xPoints":5.8,"minutes":3150,"opponent":"Liverpool","homeAway":"A","cleanSheets":15,"goals":2,"assists":1},
-                {"name":"Kieran Trippier","team":"Newcastle","price":6.8,"points":145,"form":6.5,"xG":0.04,"xA":0.22,"xPoints":6.1,"minutes":2734,"opponent":"Brighton","homeAway":"H","cleanSheets":12,"goals":1,"assists":6},
-                {"name":"Reece James","team":"Chelsea","price":6.5,"points":128,"form":5.8,"xG":0.06,"xA":0.18,"xPoints":5.9,"minutes":2456,"opponent":"Liverpool","homeAway":"A","cleanSheets":11,"goals":2,"assists":5},
-                {"name":"Kyle Walker","team":"Man City","price":6.0,"points":132,"form":5.9,"xG":0.02,"xA":0.08,"xPoints":5.2,"minutes":2876,"opponent":"Burnley","homeAway":"H","cleanSheets":18,"goals":0,"assists":3},
-                {"name":"Gabriel Magalhães","team":"Arsenal","price":5.7,"points":139,"form":6.0,"xG":0.11,"xA":0.02,"xPoints":5.6,"minutes":3015,"opponent":"Liverpool","homeAway":"A","cleanSheets":14,"goals":4,"assists":0}
-            ],
-            midfielders: [
-                {"name":"Mohamed Salah","team":"Liverpool","price":13.1,"points":187,"form":8.1,"xG":0.67,"xA":0.43,"xPoints":8.2,"minutes":3104,"opponent":"Arsenal","homeAway":"H","goals":18,"assists":12},
-                {"name":"Kevin De Bruyne","team":"Man City","price":9.8,"points":156,"form":7.4,"xG":0.31,"xA":0.58,"xPoints":7.6,"minutes":2387,"opponent":"Burnley","homeAway":"H","goals":7,"assists":16},
-                {"name":"Bukayo Saka","team":"Arsenal","price":8.9,"points":171,"form":7.5,"xG":0.34,"xA":0.41,"xPoints":6.9,"minutes":2987,"opponent":"Liverpool","homeAway":"A","goals":9,"assists":11},
-                {"name":"Phil Foden","team":"Man City","price":8.2,"points":149,"form":6.0,"xG":0.45,"xA":0.28,"xPoints":6.1,"minutes":2543,"opponent":"Burnley","homeAway":"H","goals":11,"assists":8},
-                {"name":"James Maddison","team":"Tottenham","price":7.8,"points":134,"form":5.9,"xG":0.38,"xA":0.35,"xPoints":5.7,"minutes":2456,"opponent":"Wolves","homeAway":"H","goals":8,"assists":9},
-                {"name":"Bruno Fernandes","team":"Man United","price":8.5,"points":152,"form":6.7,"xG":0.42,"xA":0.33,"xPoints":6.5,"minutes":2734,"opponent":"Sheffield Utd","homeAway":"H","goals":10,"assists":8},
-                {"name":"Martin Ødegaard","team":"Arsenal","price":8.1,"points":148,"form":6.4,"xG":0.29,"xA":0.38,"xPoints":6.2,"minutes":2658,"opponent":"Liverpool","homeAway":"A","goals":6,"assists":12},
-                {"name":"Jarrod Bowen","team":"West Ham","price":7.5,"points":138,"form":6.1,"xG":0.35,"xA":0.25,"xPoints":5.8,"minutes":2876,"opponent":"Brighton","homeAway":"A","goals":9,"assists":7}
-            ],
-            attackers: [
-                {"name":"Erling Haaland","team":"Man City","price":15.0,"points":195,"form":8.7,"xG":0.89,"xA":0.12,"xPoints":9.6,"minutes":2847,"opponent":"Burnley","homeAway":"H","goals":24,"assists":3},
-                {"name":"Harry Kane","team":"Tottenham","price":11.5,"points":168,"form":7.5,"xG":0.74,"xA":0.21,"xPoints":8.5,"minutes":2654,"opponent":"Wolves","homeAway":"H","goals":21,"assists":6},
-                {"name":"Ollie Watkins","team":"Aston Villa","price":9.2,"points":145,"form":6.0,"xG":0.52,"xA":0.18,"xPoints":6.2,"minutes":2734,"opponent":"Fulham","homeAway":"A","goals":14,"assists":5},
-                {"name":"Darwin Núñez","team":"Liverpool","price":8.8,"points":132,"form":5.8,"xG":0.61,"xA":0.15,"xPoints":6.0,"minutes":2456,"opponent":"Arsenal","homeAway":"H","goals":13,"assists":4},
-                {"name":"Yoane Wissa","team":"Brentford","price":6.1,"points":118,"form":4.4,"xG":0.41,"xA":0.08,"xPoints":4.5,"minutes":2187,"opponent":"Southampton","homeAway":"A","goals":10,"assists":2},
-                {"name":"Ivan Toney","team":"Brentford","price":7.2,"points":141,"form":6.3,"xG":0.58,"xA":0.14,"xPoints":6.1,"minutes":2543,"opponent":"Southampton","homeAway":"A","goals":15,"assists":4},
-                {"name":"Callum Wilson","team":"Newcastle","price":7.8,"points":128,"form":5.7,"xG":0.64,"xA":0.11,"xPoints":5.9,"minutes":2298,"opponent":"Brighton","homeAway":"H","goals":12,"assists":3},
-                {"name":"Alexander Isak","team":"Newcastle","price":8.5,"points":136,"form":6.1,"xG":0.59,"xA":0.13,"xPoints":6.0,"minutes":2456,"opponent":"Brighton","homeAway":"H","goals":13,"assists":3}
-            ]
+            }
         };
     }
 
@@ -106,21 +66,36 @@ class FPLStatHub {
     }
 
     async loadAllData() {
-        const dataFiles = {
+        // Team data files (6 files)
+        const teamDataFiles = {
             all: 'team_all_matches.csv',
             last5: 'team_last5_matches.csv',
             home: 'team_all_home_matches.csv',
-            last5_home: 'team_last5_home_matches.csv',
+            home_last5: 'team_last5_home_matches.csv',
             away: 'team_all_away_matches.csv',
-            last5_away: 'team_last5_away_matches.csv'
+            away_last5: 'team_last5_away_matches.csv'
         };
 
+        // Player data files (24 files = 4 positions × 6 scenarios)
+        const positions = ['goalkeepers', 'defenders', 'midfielders', 'attackers'];
+        const scenarios = ['all', 'last5', 'home', 'home_last5', 'away', 'away_last5'];
+        
+        const playerDataFiles = {};
+        positions.forEach(position => {
+            playerDataFiles[position] = {};
+            scenarios.forEach(scenario => {
+                playerDataFiles[position][scenario] = `${position}_${scenario}.csv`;
+            });
+        });
+
         try {
-            console.log('Loading team data from folder:', this.dataFolder);
+            console.log('Loading all data from folder:', this.dataFolder);
             
-            const loadPromises = Object.entries(dataFiles).map(async ([key, filename]) => {
+            // Load team data
+            console.log('Loading team data...');
+            const teamLoadPromises = Object.entries(teamDataFiles).map(async ([key, filename]) => {
                 const filepath = `${this.dataFolder}${filename}`;
-                console.log(`Loading ${key} data from:`, filepath);
+                console.log(`Loading team ${key} data from:`, filepath);
                 
                 try {
                     const response = await fetch(filepath);
@@ -129,15 +104,52 @@ class FPLStatHub {
                     }
                     const csvText = await response.text();
                     this.teamData[key] = this.parseCSV(csvText);
-                    console.log(`Successfully loaded ${key} data:`, this.teamData[key].length, 'teams');
+                    console.log(`Successfully loaded team ${key} data:`, this.teamData[key].length, 'teams');
                 } catch (error) {
-                    console.error(`Error loading ${key} data from ${filepath}:`, error);
+                    console.error(`Error loading team ${key} data from ${filepath}:`, error);
                     this.teamData[key] = [];
                 }
             });
 
-            await Promise.all(loadPromises);
-            console.log('All team data loaded successfully');
+            // Load player data
+            console.log('Loading player data...');
+            const playerLoadPromises = [];
+            
+            positions.forEach(position => {
+                this.playerData[position] = {};
+                
+                scenarios.forEach(scenario => {
+                    const filename = playerDataFiles[position][scenario];
+                    const filepath = `${this.dataFolder}${filename}`;
+                    
+                    const promise = (async () => {
+                        console.log(`Loading ${position} ${scenario} data from:`, filepath);
+                        
+                        try {
+                            const response = await fetch(filepath);
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            const csvText = await response.text();
+                            this.playerData[position][scenario] = this.parseCSV(csvText);
+                            console.log(`Successfully loaded ${position} ${scenario} data:`, 
+                                       this.playerData[position][scenario].length, 'players');
+                        } catch (error) {
+                            console.error(`Error loading ${position} ${scenario} data from ${filepath}:`, error);
+                            this.playerData[position][scenario] = [];
+                        }
+                    })();
+                    
+                    playerLoadPromises.push(promise);
+                });
+            });
+
+            // Wait for all data to load
+            await Promise.all([...teamLoadPromises, ...playerLoadPromises]);
+            
+            console.log('All data loaded successfully');
+            console.log('Team data keys:', Object.keys(this.teamData));
+            console.log('Player data structure:', Object.keys(this.playerData));
             
         } catch (error) {
             console.error('Error in loadAllData:', error);
@@ -149,13 +161,13 @@ class FPLStatHub {
             console.warn('Empty CSV data received');
             return [];
         }
-
+        
         const lines = csvText.trim().split('\n');
         if (lines.length < 2) {
             console.warn('CSV has insufficient data');
             return [];
         }
-
+        
         const headers = lines[0].split(',').map(h => h.trim());
         console.log('CSV headers:', headers);
         
@@ -173,7 +185,13 @@ class FPLStatHub {
             });
             
             return row;
-        }).filter(row => row.team && row.team !== '');
+        }).filter(row => {
+            // For team data, filter by team name
+            if (row.team && row.team !== '') return true;
+            // For player data, filter by player name
+            if (row.first_name || row.second_name) return true;
+            return false;
+        });
     }
 
     setupEventListeners() {
@@ -356,45 +374,12 @@ class FPLStatHub {
     }
 
     setupFilters() {
-        const minutesFilter = document.getElementById('minutesFilter');
-        if (minutesFilter) {
-            minutesFilter.addEventListener('input', (e) => {
-                this.filters.minutes = parseInt(e.target.value);
-                document.getElementById('minutesValue').textContent = e.target.value;
+        const viewFilter = document.getElementById('venueFilter');  // element id stays the same
+        if (viewFilter) {
+            viewFilter.addEventListener('change', (e) => {
+                this.filters.view = e.target.value;      // update to use `view`
                 if (this.currentMainTab === 'players') {
-                    this.renderPlayersContent();
-                }
-            });
-        }
-
-        const formFilter = document.getElementById('formFilter');
-        if (formFilter) {
-            formFilter.addEventListener('input', (e) => {
-                this.filters.form = parseFloat(e.target.value);
-                document.getElementById('formValue').textContent = e.target.value + '+';
-                if (this.currentMainTab === 'players') {
-                    this.renderPlayersContent();
-                }
-            });
-        }
-
-        const xPointsFilter = document.getElementById('xPointsFilter');
-        if (xPointsFilter) {
-            xPointsFilter.addEventListener('input', (e) => {
-                this.filters.xPoints = parseFloat(e.target.value);
-                document.getElementById('xPointsValue').textContent = e.target.value + '+';
-                if (this.currentMainTab === 'players') {
-                    this.renderPlayersContent();
-                }
-            });
-        }
-
-        const venueFilter = document.getElementById('venueFilter');
-        if (venueFilter) {
-            venueFilter.addEventListener('change', (e) => {
-                this.filters.venue = e.target.value;
-                if (this.currentMainTab === 'players') {
-                    this.renderPlayersContent();
+                    this.renderPlayersContent();         // or renderPlayersTab(), whichever you use
                 }
             });
         }
@@ -534,21 +519,33 @@ class FPLStatHub {
         this.renderPlayersContent();
     }
 
+    renderPlayersTab() {
+        // Render the player sub-navigation (tabs wired elsewhere)
+        this.renderPlayersContent();
+    }
+
     renderPlayersContent() {
-        const playersContent = document.getElementById('playersContent');
-        if (!playersContent) return;
+        const container = document.getElementById('playersContent');
+        if (!container) return;
 
-        const rawData = this.data[this.currentPlayerPosition] || [];
-        const filteredData = this.filterPlayerData(rawData);
-        const sortedData = this.sortData(filteredData);
+        // Retrieve data for current position and selected view
+        const position = this.currentPlayerPosition;   // e.g., 'defenders'
+        const view = this.filters.view;                 // e.g., 'all', 'last5', 'home', etc.
 
-        const tableHTML = this.generatePlayerTable(sortedData);
-        playersContent.innerHTML = tableHTML;
+        const rawData = (this.playerData[position] || {})[view] || [];
+
+        // Generate HTML table and inject into the container
+        container.innerHTML = this.generatePlayerTable(rawData);
     }
 
     generatePlayerTable(data) {
-        if (data.length === 0) {
-            return '<div class="table-container"><p style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">No players match the current filters</p></div>';
+        if (!data.length) {
+            return `
+                <div class="table-container">
+                    <p style="text-align:center; padding:2rem; color:var(--color-text-secondary);">
+                        No players match the current filters
+                    </p>
+                </div>`;
         }
 
         const headers = this.getTableHeaders(this.currentPlayerPosition);
@@ -557,104 +554,164 @@ class FPLStatHub {
         return `
             <div class="table-container">
                 <table class="stats-table">
-                    <thead>
-                        <tr>${headers}</tr>
-                    </thead>
+                    <thead><tr>${headers}</tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
-            </div>
-        `;
+            </div>`;
     }
 
     getTableHeaders(position) {
-        const baseHeaders = `
-            <th data-sort="name">Player</th>
-            <th data-sort="team">Team</th>
-            <th data-sort="minutes">Minutes</th>
-        `;
+        // Common headers for all
+        let base = `
+            <th>First Name</th>
+            <th>Second Name</th>
+            <th>Form</th>
+            <th>Opponent</th>
+            <th>Home/Away</th>
+            <th>Minutes</th>`;
 
-        if (position === 'goalkeepers') {
-            return baseHeaders + `
-                <th data-sort="points">Points</th>
-                <th data-sort="xPoints">xPoints</th>
-                <th data-sort="cleanSheets">Clean Sheets</th>
-                <th data-sort="saves">Saves</th>
-                <th data-sort="xGC">xGC</th>
-                <th data-sort="form">Form</th>
-                <th data-sort="opponent">Next Fixture</th>
-            `;
-        } else if (position === 'defenders') {
-            return baseHeaders + `
-                <th data-sort="xG">xG</th>
-                <th data-sort="xA">xA</th>
-                <th data-sort="points">Points</th>
-                <th data-sort="xPoints">xPoints</th>
-                <th data-sort="cleanSheets">Clean Sheets</th>
-                <th data-sort="goals">Goals</th>
-                <th data-sort="assists">Assists</th>
-                <th data-sort="form">Form</th>
-                <th data-sort="opponent">Next Fixture</th>
-            `;
-        } else {
-            return baseHeaders + `
-                <th data-sort="xG">xG</th>
-                <th data-sort="xA">xA</th>
-                <th data-sort="points">Points</th>
-                <th data-sort="xPoints">xPoints</th>
-                <th data-sort="goals">Goals</th>
-                <th data-sort="assists">Assists</th>
-                <th data-sort="form">Form</th>
-                <th data-sort="opponent">Next Fixture</th>
-            `;
+        switch (position) {
+            case 'goalkeepers':
+                base += `
+                    <th>xGC</th>
+                    <th>Points</th>
+                    <th>xPoints</th>
+                    <th>Home/Away Minutes</th>
+                    <th>Points (Home/Away)</th>
+                    <th>xPoints (Home/Away)</th>
+                    <th>Clean Sheets</th>
+                    <th>Goals Conceded</th>
+                    <th>Bonus</th>
+                    <th>Saves</th>`;
+                break;
+            case 'defenders':
+                base += `
+                    <th>xG</th>
+                    <th>xA</th>
+                    <th>Points</th>
+                    <th>xPoints</th>
+                    <th>Home/Away Minutes</th>
+                    <th>Points (Home/Away)</th>
+                    <th>xPoints (Home/Away)</th>
+                    <th>Goals</th>
+                    <th>Assists</th>
+                    <th>Clean Sheets</th>
+                    <th>Goals Conceded</th>
+                    <th>Bonus</th>`;
+                break;
+            case 'midfielders':
+                base += `
+                    <th>xG</th>
+                    <th>xA</th>
+                    <th>xGC</th>
+                    <th>Points</th>
+                    <th>xPoints</th>
+                    <th>Home/Away Minutes</th>
+                    <th>Points (Home/Away)</th>
+                    <th>xPoints (Home/Away)</th>
+                    <th>Goals</th>
+                    <th>Assists</th>
+                    <th>Clean Sheets</th>
+                    <th>Goals Conceded</th>
+                    <th>Bonus</th>`;
+                break;
+            case 'attackers':
+                base += `
+                    <th>xG</th>
+                    <th>xA</th>
+                    <th>Points</th>
+                    <th>xPoints</th>
+                    <th>Home/Away Minutes</th>
+                    <th>Points (Home/Away)</th>
+                    <th>xPoints (Home/Away)</th>
+                    <th>Goals</th>
+                    <th>Assists</th>
+                    <th>Bonus</th>`;
+                break;
         }
-    }
+
+        return base;
+    },
 
     generatePlayerRow(player) {
-        const formClass = this.getFormClass(player.form);
-        const homeAwayBadge = player.homeAway ? 
-            `<span class="badge badge-${player.homeAway.toLowerCase()}">${player.homeAway}</span>` : '';
+        const name = `${player.first_name ?? ''} ${player.second_name ?? ''}`.trim();
+        const badge = player.Home_Away ? `<span class="badge badge-${player.Home_Away.toLowerCase()}">${player.Home_Away}</span>` : '';
+        const formClass = this.getFormClass ? this.getFormClass(player.form) : '';
 
-        const baseData = `
-            <td><span class="player-name">${player.name}</span></td>
-            <td><span class="team-name">${player.team}</span></td>
-            <td>${player.minutes.toLocaleString()}</td>
-        `;
+        const base = `
+            <td>${name}</td>
+            <td>${player.form?.toFixed(1) ?? '0.0'}</td>
+            <td>${player.team ? player.team : player.team_name ?? ''}</td>
+            <td>${player.Home_Away ?? ''}</td>
+            <td>${player.minutes?.toLocaleString() ?? '0'}</td>`;
 
-        if (this.currentPlayerPosition === 'goalkeepers') {
-            return `<tr>${baseData}
-                <td><strong>${player.points}</strong></td>
-                <td>${player.xPoints.toFixed(1)}</td>
-                <td>${player.cleanSheets}</td>
-                <td>${player.saves}</td>
-                <td>${player.xGC.toFixed(1)}</td>
-                <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
-                <td>${player.opponent} ${homeAwayBadge}</td>
-            </tr>`;
-        } else if (this.currentPlayerPosition === 'defenders') {
-            return `<tr>${baseData}
-                <td>${player.xG.toFixed(2)}</td>
-                <td>${player.xA.toFixed(2)}</td>
-                <td><strong>${player.points}</strong></td>
-                <td>${player.xPoints.toFixed(1)}</td>
-                <td>${player.cleanSheets}</td>
-                <td>${player.goals}</td>
-                <td>${player.assists}</td>
-                <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
-                <td>${player.opponent} ${homeAwayBadge}</td>
-            </tr>`;
-        } else {
-            return `<tr>${baseData}
-                <td>${player.xG.toFixed(2)}</td>
-                <td>${player.xA.toFixed(2)}</td>
-                <td><strong>${player.points}</strong></td>
-                <td>${player.xPoints.toFixed(1)}</td>
-                <td>${player.goals}</td>
-                <td>${player.assists}</td>
-                <td><span class="${formClass}">${player.form.toFixed(1)}</span></td>
-                <td>${player.opponent} ${homeAwayBadge}</td>
-            </tr>`;
+        switch(this.currentPlayerPosition) {
+            case 'goalkeepers':
+                return `
+                    <tr>${base}
+                        <td>${player.xGC?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.total_points ?? 0}</td>
+                        <td>${player.xPoints?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.home_away_minutes ?? 0}</td>
+                        <td>${player.total_points_home_away ?? 0}</td>
+                        <td>${player.xPoints_home_away?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.clean_sheets ?? 0}</td>
+                        <td>${player.goals_conceded ?? 0}</td>
+                        <td>${player.bonus ?? 0}</td>
+                        <td>${player.saves ?? 0}</td>
+                    </tr>`;
+            case 'defenders':
+                return `
+                    <tr>${base}
+                        <td>${player.xG?.toFixed(2) ?? '0.00'}</td>
+                        <td>${player.xA?.toFixed(2) ?? '0.00'}</td>
+                        <td>${player.total_points ?? 0}</td>
+                        <td>${player.xPoints?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.home_away_minutes ?? 0}</td>
+                        <td>${player.total_points_home_away ?? 0}</td>
+                        <td>${player.xPoints_home_away?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.goal_scored ?? 0}</td>
+                        <td>${player.assists ?? 0}</td>
+                        <td>${player.clean_sheets ?? 0}</td>
+                        <td>${player.goals_conceded ?? 0}</td>
+                        <td>${player.bonus ?? 0}</td>
+                    </tr>`;
+            case 'midfielders':
+                return `
+                    <tr>${base}
+                        <td>${player.xG?.toFixed(2) ?? '0.00'}</td>
+                        <td>${player.xA?.toFixed(2) ?? '0.00'}</td>
+                        <td>${player.xGC?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.total_points ?? 0}</td>
+                        <td>${player.xPoints?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.home_away_minutes ?? 0}</td>
+                        <td>${player.total_points_home_away ?? 0}</td>
+                        <td>${player.xPoints_home_away?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.goal_scored ?? 0}</td>
+                        <td>${player.assists ?? 0}</td>
+                        <td>${player.clean_sheets ?? 0}</td>
+                        <td>${player.goals_conceded ?? 0}</td>
+                        <td>${player.bonus ?? 0}</td>
+                    </tr>`;
+            case 'attackers':
+                return `
+                    <tr>${base}
+                        <td>${player.xG?.toFixed(2) ?? '0.00'}</td>
+                        <td>${player.xA?.toFixed(2) ?? '0.00'}</td>
+                        <td>${player.total_points ?? 0}</td>
+                        <td>${player.xPoints?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.home_away_minutes ?? 0}</td>
+                        <td>${player.total_points_home_away ?? 0}</td>
+                        <td>${player.xPoints_home_away?.toFixed(1) ?? '0.0'}</td>
+                        <td>${player.goal_scored ?? 0}</td>
+                        <td>${player.assists ?? 0}</td>
+                        <td>${player.bonus ?? 0}</td>
+                    </tr>`;
+            default:
+                return `<tr>${base}</tr>`;
         }
     }
+
 
     renderLeagueTable() {
         const tbody = document.getElementById('leagueTable');
@@ -768,14 +825,6 @@ class FPLStatHub {
         console.log('Refreshing team data...');
         await this.loadAllData();
         this.renderTeamStats();
-    }
-
-    filterPlayerData(data) {
-        return data.filter(player => {
-            return player.minutes >= this.filters.minutes &&
-                   player.form >= this.filters.form &&
-                   player.xPoints >= this.filters.xPoints;
-        });
     }
 
     sortTable(column) {

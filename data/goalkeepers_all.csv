@@ -1,0 +1,25 @@
+first_name,second_name,id,form,diff,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves
+Đorđe,Petrović,67,2.0,"<bound method Series.diff of can_transact                            True
+can_select                              True
+chance_of_playing_next_round             NaN
+chance_of_playing_this_round             NaN
+code                                  457569
+                                    ...     
+clean_sheets_per_90                      0.0
+defensive_contribution_per_90            0.0
+team_name                        Bournemouth
+Home/Away                               Home
+team_against                          Wolves
+Name: 109, Length: 104, dtype: object>",Wolves,Home,64.0,0.0,0.0,2.4328125,4.21875,2.8125,0.0,0.0,0.0,2.8125,0.0,5.625
+Alisson,Becker,366,2.0,"<bound method Series.diff of can_transact                          True
+can_select                            True
+chance_of_playing_next_round           NaN
+chance_of_playing_this_round           NaN
+code                                116535
+                                   ...    
+clean_sheets_per_90                    0.0
+defensive_contribution_per_90          0.0
+team_name                        Liverpool
+Home/Away                             Away
+team_against                     Newcastle
+Name: 376, Length: 104, dtype: object>",Newcastle,Away,66.0,0.0,0.0,1.6636363636363638,2.7272727272727275,2.7272727272727275,0.0,0.0,0.0,1.3636363636363638,0.0,1.3636363636363638

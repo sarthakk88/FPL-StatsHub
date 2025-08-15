@@ -1,0 +1,13 @@
+first_name,second_name,id,form,diff,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves
+Francisco Evanilson,de Lima Barbosa,97,2.0,"<bound method Series.diff of can_transact                            True
+can_select                              True
+chance_of_playing_next_round             NaN
+chance_of_playing_this_round             NaN
+code                                  444102
+                                    ...     
+clean_sheets_per_90                      0.0
+defensive_contribution_per_90           3.97
+team_name                        Bournemouth
+Home/Away                               Home
+team_against                          Wolves
+Name: 139, Length: 104, dtype: object>",Wolves,Home,69.0,0.2608695652173913,0.0,2.2565217391304344,3.6521739130434776,2.608695652173913,0.0,0.0,0.0,2.608695652173913,0.0,0.0
