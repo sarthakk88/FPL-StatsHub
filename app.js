@@ -661,7 +661,7 @@ class FPLStatHub {
                         <td>${player.total_points?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.xPoints?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.goal_scored?.toFixed(2) ?? '0.0'}</td>
-                        <td>${player.assists?.toFixed(2) ?? '0.0'</td>
+                        <td>${player.assists?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.clean_sheets?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.goals_conceded?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
