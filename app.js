@@ -626,61 +626,61 @@ class FPLStatHub {
     }
 
     getTableHeaders(position) {
-        // Common headers for all
+        // Common headers for all with data-sort attributes
         let base = `
-            <th>First Name</th>
-            <th>Second Name</th>
-            <th>Form</th>
-            <th>Opponent</th>
-            <th>Home/Away</th>
-            <th>Minutes</th>`;
+            <th data-sort="first_name" class="sortable">First Name</th>
+            <th data-sort="second_name" class="sortable">Second Name</th>
+            <th data-sort="form" class="sortable">Form</th>
+            <th data-sort="team_against" class="sortable">Opponent</th>
+            <th data-sort="Home_Away" class="sortable">Home/Away</th>
+            <th data-sort="minutes" class="sortable">Minutes</th>`;
 
         switch (position) {
             case 'goalkeepers':
                 base += `
-                    <th>xGC</th>
-                    <th>Points</th>
-                    <th>xPoints</th>
-                    <th>Clean Sheets</th>
-                    <th>Goals Conceded</th>
-                    <th>Bonus</th>
-                    <th>Saves</th>`;
+                    <th data-sort="xGC" class="sortable">xGC</th>
+                    <th data-sort="total_points" class="sortable">Points</th>
+                    <th data-sort="xPoints" class="sortable">xPoints</th>
+                    <th data-sort="clean_sheets" class="sortable">Clean Sheets</th>
+                    <th data-sort="goals_conceded" class="sortable">Goals Conceded</th>
+                    <th data-sort="bonus" class="sortable">Bonus</th>
+                    <th data-sort="saves" class="sortable">Saves</th>`;
                 break;
             case 'defenders':
                 base += `
-                    <th>xG</th>
-                    <th>xA</th>
-                    <th>xGC</th>
-                    <th>Points</th>
-                    <th>xPoints</th>
-                    <th>Goals</th>
-                    <th>Assists</th>
-                    <th>Clean Sheets</th>
-                    <th>Goals Conceded</th>
-                    <th>Bonus</th>`;
+                    <th data-sort="xG" class="sortable">xG</th>
+                    <th data-sort="xA" class="sortable">xA</th>
+                    <th data-sort="xGC" class="sortable">xGC</th>
+                    <th data-sort="total_points" class="sortable">Points</th>
+                    <th data-sort="xPoints" class="sortable">xPoints</th>
+                    <th data-sort="goal_scored" class="sortable">Goals</th>
+                    <th data-sort="assists" class="sortable">Assists</th>
+                    <th data-sort="clean_sheets" class="sortable">Clean Sheets</th>
+                    <th data-sort="goals_conceded" class="sortable">Goals Conceded</th>
+                    <th data-sort="bonus" class="sortable">Bonus</th>`;
                 break;
             case 'midfielders':
                 base += `
-                    <th>xG</th>
-                    <th>xA</th>
-                    <th>xGC</th>
-                    <th>Points</th>
-                    <th>xPoints</th>
-                    <th>Goals</th>
-                    <th>Assists</th>
-                    <th>Clean Sheets</th>
-                    <th>Goals Conceded</th>
-                    <th>Bonus</th>`;
+                    <th data-sort="xG" class="sortable">xG</th>
+                    <th data-sort="xA" class="sortable">xA</th>
+                    <th data-sort="xGC" class="sortable">xGC</th>
+                    <th data-sort="total_points" class="sortable">Points</th>
+                    <th data-sort="xPoints" class="sortable">xPoints</th>
+                    <th data-sort="goal_scored" class="sortable">Goals</th>
+                    <th data-sort="assists" class="sortable">Assists</th>
+                    <th data-sort="clean_sheets" class="sortable">Clean Sheets</th>
+                    <th data-sort="goals_conceded" class="sortable">Goals Conceded</th>
+                    <th data-sort="bonus" class="sortable">Bonus</th>`;
                 break;
             case 'attackers':
                 base += `
-                    <th>xG</th>
-                    <th>xA</th>
-                    <th>Points</th>
-                    <th>xPoints</th>
-                    <th>Goals</th>
-                    <th>Assists</th>
-                    <th>Bonus</th>`;
+                    <th data-sort="xG" class="sortable">xG</th>
+                    <th data-sort="xA" class="sortable">xA</th>
+                    <th data-sort="total_points" class="sortable">Points</th>
+                    <th data-sort="xPoints" class="sortable">xPoints</th>
+                    <th data-sort="goal_scored" class="sortable">Goals</th>
+                    <th data-sort="assists" class="sortable">Assists</th>
+                    <th data-sort="bonus" class="sortable">Bonus</th>`;
                 break;
         }
 
@@ -895,7 +895,6 @@ class FPLStatHub {
             this.renderLeagueTable();
         }
     }
-
 
     getPositionClass(position) {
         switch(position) {
