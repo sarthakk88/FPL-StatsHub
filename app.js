@@ -580,9 +580,6 @@ class FPLStatHub {
                     <th>xGC</th>
                     <th>Points</th>
                     <th>xPoints</th>
-                    <th>Home/Away Minutes</th>
-                    <th>Points (Home/Away)</th>
-                    <th>xPoints (Home/Away)</th>
                     <th>Clean Sheets</th>
                     <th>Goals Conceded</th>
                     <th>Bonus</th>
@@ -595,9 +592,6 @@ class FPLStatHub {
                     <th>xGC</th>
                     <th>Points</th>
                     <th>xPoints</th>
-                    <th>Home/Away Minutes</th>
-                    <th>Points (Home/Away)</th>
-                    <th>xPoints (Home/Away)</th>
                     <th>Goals</th>
                     <th>Assists</th>
                     <th>Clean Sheets</th>
@@ -611,9 +605,6 @@ class FPLStatHub {
                     <th>xGC</th>
                     <th>Points</th>
                     <th>xPoints</th>
-                    <th>Home/Away Minutes</th>
-                    <th>Points (Home/Away)</th>
-                    <th>xPoints (Home/Away)</th>
                     <th>Goals</th>
                     <th>Assists</th>
                     <th>Clean Sheets</th>
@@ -626,9 +617,6 @@ class FPLStatHub {
                     <th>xA</th>
                     <th>Points</th>
                     <th>xPoints</th>
-                    <th>Home/Away Minutes</th>
-                    <th>Points (Home/Away)</th>
-                    <th>xPoints (Home/Away)</th>
                     <th>Goals</th>
                     <th>Assists</th>
                     <th>Bonus</th>`;
@@ -647,7 +635,7 @@ class FPLStatHub {
         const base = `
             <td>${firstName}</td>
             <td>${secondName}</td>
-            <td>${player.form?.toFixed(1) ?? '0.0'}</td>
+            <td>${player.form?.toFixed(2) ?? '0.0'}</td>
             <td>${player.team_against ?? ''} ${badge}</td>
             <td>${player.Home_Away ?? ''}</td>
             <td>${player.minutes?.toLocaleString() ?? '0'}</td>`;
@@ -656,64 +644,52 @@ class FPLStatHub {
             case 'goalkeepers':
                 return `
                     <tr>${base}
-                        <td>${player.xGC?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.total_points ?? 0}</td>
-                        <td>${player.xPoints?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.home_away_minutes ?? 0}</td>
-                        <td>${player.total_points_home_away ?? 0}</td>
-                        <td>${player.xPoints_home_away?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.clean_sheets ?? 0}</td>
-                        <td>${player.goals_conceded ?? 0}</td>
-                        <td>${player.bonus ?? 0}</td>
-                        <td>${player.saves ?? 0}</td>
+                        <td>${player.xGC?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.total_points?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.xPoints?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.clean_sheets?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.goals_conceded?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.saves?.toFixed(2) ?? '0.0'}</td>
                     </tr>`;
             case 'defenders':
                 return `
                     <tr>${base}
                         <td>${player.xG?.toFixed(2) ?? '0.00'}</td>
                         <td>${player.xA?.toFixed(2) ?? '0.00'}</td>
-                        <td>${player.xGC?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.total_points ?? 0}</td>
-                        <td>${player.xPoints?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.home_away_minutes ?? 0}</td>
-                        <td>${player.total_points_home_away ?? 0}</td>
-                        <td>${player.xPoints_home_away?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.goal_scored ?? 0}</td>
-                        <td>${player.assists ?? 0}</td>
-                        <td>${player.clean_sheets ?? 0}</td>
-                        <td>${player.goals_conceded ?? 0}</td>
-                        <td>${player.bonus ?? 0}</td>
+                        <td>${player.xGC?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.total_points?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.xPoints?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.goal_scored?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.assists?.toFixed(2) ?? '0.0'</td>
+                        <td>${player.clean_sheets?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.goals_conceded?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
                     </tr>`;
             case 'midfielders':
                 return `
                     <tr>${base}
                         <td>${player.xG?.toFixed(2) ?? '0.00'}</td>
                         <td>${player.xA?.toFixed(2) ?? '0.00'}</td>
-                        <td>${player.xGC?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.total_points ?? 0}</td>
-                        <td>${player.xPoints?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.home_away_minutes ?? 0}</td>
-                        <td>${player.total_points_home_away ?? 0}</td>
-                        <td>${player.xPoints_home_away?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.goal_scored ?? 0}</td>
-                        <td>${player.assists ?? 0}</td>
-                        <td>${player.clean_sheets ?? 0}</td>
-                        <td>${player.goals_conceded ?? 0}</td>
-                        <td>${player.bonus ?? 0}</td>
+                        <td>${player.xGC?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.total_points?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.xPoints?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.goal_scored?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.assists?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.clean_sheets?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.goals_conceded?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
                     </tr>`;
             case 'attackers':
                 return `
                     <tr>${base}
                         <td>${player.xG?.toFixed(2) ?? '0.00'}</td>
                         <td>${player.xA?.toFixed(2) ?? '0.00'}</td>
-                        <td>${player.total_points ?? 0}</td>
-                        <td>${player.xPoints?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.home_away_minutes ?? 0}</td>
-                        <td>${player.total_points_home_away ?? 0}</td>
-                        <td>${player.xPoints_home_away?.toFixed(1) ?? '0.0'}</td>
-                        <td>${player.goal_scored ?? 0}</td>
-                        <td>${player.assists ?? 0}</td>
-                        <td>${player.bonus ?? 0}</td>
+                        <td>${player.total_points?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.xPoints?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.goal_scored?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.assists?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
                     </tr>`;
             default:
                 return `<tr>${base}</tr>`;
