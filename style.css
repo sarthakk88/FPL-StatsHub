@@ -1392,7 +1392,7 @@ body {
 }
 
 /* Transfer Algorithm */
-* {
+/* * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -1632,4 +1632,4 @@ tr:hover {
     th, td {
         padding: 6px 4px;
     }
-}
+} */
