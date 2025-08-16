@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+team,xG,xGA,npxG,npxGA,ppda,ppda_allowed,deep,deep_allowed,scored,conceded,xpts,wins,draws,loses,pts,npxGD
+Bournemouth,,,,,,,,,,,,,,,,
+Liverpool,2.33007,1.57303,2.33007,1.57303,,,9.0,8.0,4.0,2.0,1.877,1.0,0.0,0.0,3.0,0.7570400000000002
+=======
 xG,xGA,npxG,npxGA,ppda,ppda_allowed,deep,deep_allowed,scored,conceded,xpts,wins,draws,loses,pts,npxGD
 ,,,,,,,,,,,,,,,
 2.33007,1.57303,2.33007,1.57303,,,9.0,8.0,4.0,2.0,1.877,1.0,0.0,0.0,3.0,0.7570400000000002
+>>>>>>> 56853e4a6c96a31b523ccfc4f05d21ad32695fab
