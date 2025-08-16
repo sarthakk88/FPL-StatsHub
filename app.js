@@ -3,7 +3,7 @@
 class FPLStatHub {
     constructor() {
         this.data = this.initializeData();
-        this.currentMainTab = 'my-team';
+        this.currentMainTab = 'players';
         this.currentPlayerPosition = 'goalkeepers';
         this.selectedView = 'all';
         

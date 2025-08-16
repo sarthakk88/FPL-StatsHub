@@ -1390,3 +1390,246 @@ body {
 .chart-scroll-container::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* Transfer Algorithm */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.tab {
+    background: #38003c;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.source {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.source a {
+    color: #38003c;
+    text-decoration: none;
+}
+
+.controls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.control-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.position-filters {
+    display: flex;
+    gap: 10px;
+}
+
+.position-btn {
+    padding: 8px 16px;
+    border: 2px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+.position-btn.active {
+    background: #38003c;
+    color: white;
+    border-color: #38003c;
+}
+
+.position-btn.gk { border-color: #f39c12; }
+.position-btn.gk.active { background: #f39c12; border-color: #f39c12; }
+
+.position-btn.d { border-color: #27ae60; }
+.position-btn.d.active { background: #27ae60; border-color: #27ae60; }
+
+.position-btn.m { border-color: #3498db; }
+.position-btn.m.active { background: #3498db; border-color: #3498db; }
+
+.position-btn.f { border-color: #e74c3c; }
+.position-btn.f.active { background: #e74c3c; border-color: #e74c3c; }
+
+.form-control {
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.search-box input {
+    min-width: 250px;
+}
+
+.team-filter select {
+    min-width: 150px;
+}
+
+.table-container {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th {
+    background: #2c3e50;
+    color: white;
+    padding: 12px 8px;
+    text-align: left;
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    user-select: none;
+}
+
+th:hover {
+    background: #34495e;
+}
+
+th.sortable::after {
+    content: " ↕";
+    opacity: 0.5;
+}
+
+th.sort-asc::after {
+    content: " ↑";
+    opacity: 1;
+}
+
+th.sort-desc::after {
+    content: " ↓";
+    opacity: 1;
+}
+
+td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+.row-gk { background-color: #fff8dc; }
+.row-d { background-color: #f0fff0; }
+.row-m { background-color: #f0f8ff; }
+.row-f { background-color: #fff0f5; }
+
+.player-name {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.team {
+    font-weight: bold;
+    color: #38003c;
+}
+
+.price {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.sum {
+    font-weight: bold;
+    color: #e74c3c;
+}
+
+.stats-summary {
+    text-align: center;
+    margin: 20px 0;
+    color: #666;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .control-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .position-filters {
+        justify-content: center;
+    }
+
+    .form-control {
+        width: 100%;
+    }
+
+    table {
+        font-size: 11px;
+    }
+
+    th, td {
+        padding: 6px 4px;
+    }
+}
