@@ -130,10 +130,11 @@ class TeamDataProcessor:
             team_data = await understat.get_teams(self.UNDERSTAT_LEAGUE, self.UNDERSTAT_YEAR)
             all_df, last5_df, home_df, last5_home_df, away_df, last5_away_df = self.get_team_data(team_data)
             return (
-                all_df.set_index("team"),
-                last5_df.set_index("team"),
-                home_df.set_index("team"),
-                last5_home_df.set_index("team"),
-                away_df.set_index("team"),
-                last5_away_df.set_index("team")
+                all_df,
+                last5_df,
+                home_df,
+                last5_home_df,
+                away_df,
+                last5_away_df
             )
+
