@@ -186,19 +186,43 @@ class FPLClient:
                 if df.empty:          # guard against 0 minutes
                     return None, None
                 df = df.copy()
-                # position-specific xPoints weighting
+                
+                # Calculate defensive actions points based on position
+                def calc_defensive_points(row):
+                    if position_code == 1:
+                        return 0
+                    
+                    elif position_code == 2:  # GK or DEF
+                        # Use clearances_blocks_interceptions + tackles for defenders/GK
+                        cbit = row.get('clearances_blocks_interceptions', 0) + row.get('tackles', 0)
+                        return 2 if cbit >= 10 else 0
+                    else:  # MID or FWD (3 or 4)
+                        # Use clearances_blocks_interceptions + tackles + recoveries for mid/fwd
+                        defensive_actions = (row.get('clearances_blocks_interceptions', 0) + 
+                                        row.get('tackles', 0) + 
+                                        row.get('recoveries', 0))
+                        return 2 if defensive_actions >= 12 else 0
+                
+                # Apply defensive points calculation
+                df['defensive_points'] = df.apply(calc_defensive_points, axis=1)
+                
+                # Updated xPoints calculation with new rules
                 df["xPoints"] = (
-                    df.expected_goals   * w_xG
+                    df.expected_goals * w_xG
                     + df.expected_assists * w_xA
-                    + (df.minutes // 60)  * 2
-                    + np.maximum(0, 1 - df.expected_goals_conceded) * w_CS
-                    + (df.saves//3 if position_code==1 else 0)
+                    + (df.minutes // 60) * 2  # 2 points for 60+ minutes
+                    + np.maximum(0, 1 - df.expected_goals_conceded) * w_CS  # Clean sheet bonus
+                    + (df.saves // 3 if position_code == 1 else 0)  # GK save points (3 saves = 1 point)
+                    + df.penalties_saved * 5  # NEW: 5 points for penalty saves
                     + df.bonus
+                    + df.defensive_points  # NEW: Defensive action points
+                    - (df.expected_goals_conceded // 2)  # NEW: -1 for every 2 xGC (GK/DEF)
                     - df.yellow_cards
-                    - 2*df.red_cards
-                    - 2*df.penalties_missed
-                    - 2*df.own_goals
+                    - 3 * df.red_cards
+                    - 2 * df.penalties_missed
+                    - 2 * df.own_goals
                 )
+                
                 tot = df.sum(numeric_only=True)
                 tot_minutes = pd.to_numeric(tot.minutes, errors='coerce')
 
@@ -236,22 +260,31 @@ class FPLClient:
                     continue
                 recs[key].append({
                     **base,
-                    "minutes"       : tot.minutes,
-                    "xG"            : per90.get("expected_goals",         np.nan),
-                    "xA"            : per90.get("expected_assists",       np.nan),
-                    "xGC"           : per90.get("expected_goals_conceded",np.nan),
-                    "xPoints"       : per90.xPoints,
-                    "total_points"  : per90.total_points,
-                    "goals_scored"  : per90.get("goals_scored", np.nan),
-                    "assists"       : per90.get("assists",       np.nan),
-                    "clean_sheets"  : per90.clean_sheets,
-                    "goals_conceded": per90.goals_conceded,
-                    "bonus"         : per90.bonus,
-                    "saves"         : per90.get("saves", np.nan)
+                    "minutes"                        : tot.minutes,
+                    "xG"                            : per90.get("expected_goals", np.nan),
+                    "xA"                            : per90.get("expected_assists", np.nan),
+                    "xGC"                           : per90.get("expected_goals_conceded", np.nan),
+                    "xPoints"                       : per90.xPoints,
+                    "total_points"                  : per90.total_points,
+                    "goals_scored"                  : per90.get("goals_scored", np.nan),
+                    "assists"                       : per90.get("assists", np.nan),
+                    "clean_sheets"                  : per90.clean_sheets,
+                    "goals_conceded"                : per90.goals_conceded,
+                    "bonus"                         : per90.bonus,
+                    "saves"                         : per90.get("saves", np.nan),
+                    "defensive_points"              : per90.get("defensive_points", np.nan),
+                    "clearances_blocks_interceptions": per90.get("clearances_blocks_interceptions", np.nan),
+                    "recoveries"                    : per90.get("recoveries", np.nan),
+                    "tackles"                       : per90.get("tackles", np.nan),
+                    "defensive_contribution"        : per90.get("defensive_contribution", np.nan),
+                    "own_goals"                     : per90.get("own_goals", np.nan),
+                    "penalties_saved"               : per90.get("penalties_saved", np.nan),
+                    "penalties_missed"              : per90.get("penalties_missed", np.nan),
+                    "yellow_cards"                  : per90.get("yellow_cards", np.nan),
+                    "red_cards"                     : per90.get("red_cards", np.nan)
                 })
         # convert to DataFrames
         return {k: pd.DataFrame.from_records(v) for k,v in recs.items()}
-
     # ──────────────────────────────────────────────────────────────────────────────
     #  Public wrappers for each position
     # ──────────────────────────────────────────────────────────────────────────────

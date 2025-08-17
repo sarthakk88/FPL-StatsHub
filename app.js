@@ -644,7 +644,10 @@ class FPLStatHub {
                     <th data-sort="clean_sheets" class="sortable">Clean Sheets</th>
                     <th data-sort="goals_conceded" class="sortable">Goals Conceded</th>
                     <th data-sort="bonus" class="sortable">Bonus</th>
-                    <th data-sort="saves" class="sortable">Saves</th>`;
+                    <th data-sort="saves" class="sortable">Saves</th>
+                    <th data-sort="penalties_saved" class="sortable">Penalties Saved</th>
+                    <th data-sort="yellow_cards" class="sortable">Yellow Cards</th>
+                    <th data-sort="red_cards" class="sortable">Red Cards</th>`;
                 break;
             case 'defenders':
                 base += `
@@ -653,11 +656,17 @@ class FPLStatHub {
                     <th data-sort="xGC" class="sortable">xGC</th>
                     <th data-sort="total_points" class="sortable">Points</th>
                     <th data-sort="xPoints" class="sortable">xPoints</th>
-                    <th data-sort="goal_scored" class="sortable">Goals</th>
+                    <th data-sort="goals_scored" class="sortable">Goals</th>
                     <th data-sort="assists" class="sortable">Assists</th>
                     <th data-sort="clean_sheets" class="sortable">Clean Sheets</th>
                     <th data-sort="goals_conceded" class="sortable">Goals Conceded</th>
-                    <th data-sort="bonus" class="sortable">Bonus</th>`;
+                    <th data-sort="clearances_blocks_interceptions" class="sortable">CBI</th>
+                    <th data-sort="recoveries" class="sortable">Recoveries</th>
+                    <th data-sort="tackles" class="sortable">Tackles</th>
+                    <th data-sort="defensive_contribution" class="sortable">Def Contrib</th>
+                    <th data-sort="bonus" class="sortable">Bonus</th>
+                    <th data-sort="yellow_cards" class="sortable">Yellow Cards</th>
+                    <th data-sort="red_cards" class="sortable">Red Cards</th>`;
                 break;
             case 'midfielders':
                 base += `
@@ -666,11 +675,17 @@ class FPLStatHub {
                     <th data-sort="xGC" class="sortable">xGC</th>
                     <th data-sort="total_points" class="sortable">Points</th>
                     <th data-sort="xPoints" class="sortable">xPoints</th>
-                    <th data-sort="goal_scored" class="sortable">Goals</th>
+                    <th data-sort="goals_scored" class="sortable">Goals</th>
                     <th data-sort="assists" class="sortable">Assists</th>
                     <th data-sort="clean_sheets" class="sortable">Clean Sheets</th>
                     <th data-sort="goals_conceded" class="sortable">Goals Conceded</th>
-                    <th data-sort="bonus" class="sortable">Bonus</th>`;
+                    <th data-sort="clearances_blocks_interceptions" class="sortable">CBI</th>
+                    <th data-sort="recoveries" class="sortable">Recoveries</th>
+                    <th data-sort="tackles" class="sortable">Tackles</th>
+                    <th data-sort="defensive_contribution" class="sortable">Def Contrib</th>
+                    <th data-sort="bonus" class="sortable">Bonus</th>
+                    <th data-sort="yellow_cards" class="sortable">Yellow Cards</th>
+                    <th data-sort="red_cards" class="sortable">Red Cards</th>`;
                 break;
             case 'attackers':
                 base += `
@@ -678,9 +693,12 @@ class FPLStatHub {
                     <th data-sort="xA" class="sortable">xA</th>
                     <th data-sort="total_points" class="sortable">Points</th>
                     <th data-sort="xPoints" class="sortable">xPoints</th>
-                    <th data-sort="goal_scored" class="sortable">Goals</th>
+                    <th data-sort="goals_scored" class="sortable">Goals</th>
                     <th data-sort="assists" class="sortable">Assists</th>
-                    <th data-sort="bonus" class="sortable">Bonus</th>`;
+                    <th data-sort="bonus" class="sortable">Bonus</th>
+                    <th data-sort="defensive_contribution" class="sortable">Def Contrib</th>
+                    <th data-sort="yellow_cards" class="sortable">Yellow Cards</th>
+                    <th data-sort="red_cards" class="sortable">Red Cards</th>`;
                 break;
         }
 
@@ -712,6 +730,9 @@ class FPLStatHub {
                         <td>${player.goals_conceded?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.saves?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.penalties_saved?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.yellow_cards?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.red_cards?.toFixed(2) ?? '0.0'}</td>
                     </tr>`;
             case 'defenders':
                 return `
@@ -721,11 +742,17 @@ class FPLStatHub {
                         <td>${player.xGC?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.total_points?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.xPoints?.toFixed(2) ?? '0.0'}</td>
-                        <td>${player.goal_scored?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.goals_scored?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.assists?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.clean_sheets?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.goals_conceded?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.clearances_blocks_interceptions?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.recoveries?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.tackles?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.defensive_contribution?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.yellow_cards?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.red_cards?.toFixed(2) ?? '0.0'}</td>
                     </tr>`;
             case 'midfielders':
                 return `
@@ -735,11 +762,17 @@ class FPLStatHub {
                         <td>${player.xGC?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.total_points?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.xPoints?.toFixed(2) ?? '0.0'}</td>
-                        <td>${player.goal_scored?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.goals_scored?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.assists?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.clean_sheets?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.goals_conceded?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.clearances_blocks_interceptions?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.recoveries?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.tackles?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.defensive_contribution?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.yellow_cards?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.red_cards?.toFixed(2) ?? '0.0'}</td>
                     </tr>`;
             case 'attackers':
                 return `
@@ -748,9 +781,12 @@ class FPLStatHub {
                         <td>${player.xA?.toFixed(2) ?? '0.00'}</td>
                         <td>${player.total_points?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.xPoints?.toFixed(2) ?? '0.0'}</td>
-                        <td>${player.goal_scored?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.goals_scored?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.assists?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.defensive_contribution?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.yellow_cards?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.red_cards?.toFixed(2) ?? '0.0'}</td>
                     </tr>`;
             default:
                 return `<tr>${base}</tr>`;
