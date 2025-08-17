@@ -70,14 +70,14 @@ class FPLStatHub {
             all: 'team_all_matches.csv',
             last5: 'team_last5_matches.csv',
             home: 'team_all_home_matches.csv',
-            home_last5: 'team_last5_home_matches.csv',
+            last5_home: 'team_last5_home_matches.csv',
             away: 'team_all_away_matches.csv',
-            away_last5: 'team_last5_away_matches.csv'
+            last5_away: 'team_last5_away_matches.csv'
         };
 
         // Player data files (24 files = 4 positions × 6 scenarios)
         const positions = ['goalkeepers', 'defenders', 'midfielders', 'attackers'];
-        const scenarios = ['all', 'last5', 'home', 'home_last5', 'away', 'away_last5'];
+        const scenarios = ['all', 'last5', 'home', 'last5_home', 'away', 'last5_away'];
         
         const playerDataFiles = {};
         positions.forEach(position => {
