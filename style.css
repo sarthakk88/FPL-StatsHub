@@ -1534,10 +1534,6 @@ th {
     user-select: none;
 }
 
-th:hover {
-    background: #34495e;
-}
-
 th.sortable::after {
     content: " ↕";
     opacity: 0.5;
@@ -1558,6 +1554,3 @@ td {
     border-bottom: 1px solid #eee;
 }
 
-tr:hover {
-    background-color: #f8f9fa;
-}
