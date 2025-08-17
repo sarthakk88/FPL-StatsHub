@@ -663,7 +663,8 @@ class FPLStatHub {
                     <th data-sort="clearances_blocks_interceptions" class="sortable">CBI</th>
                     <th data-sort="recoveries" class="sortable">Recoveries</th>
                     <th data-sort="tackles" class="sortable">Tackles</th>
-                    <th data-sort="defensive_contribution" class="sortable">Def Contrib</th>
+                    <th data-sort="defensive_contribution" class="sortable">Defcon</th>
+                    <th data-sort="defensive_points" class="sortable">Defcon Points</th>
                     <th data-sort="bonus" class="sortable">Bonus</th>
                     <th data-sort="yellow_cards" class="sortable">Yellow Cards</th>
                     <th data-sort="red_cards" class="sortable">Red Cards</th>`;
@@ -682,7 +683,8 @@ class FPLStatHub {
                     <th data-sort="clearances_blocks_interceptions" class="sortable">CBI</th>
                     <th data-sort="recoveries" class="sortable">Recoveries</th>
                     <th data-sort="tackles" class="sortable">Tackles</th>
-                    <th data-sort="defensive_contribution" class="sortable">Def Contrib</th>
+                    <th data-sort="defensive_contribution" class="sortable">Defcon</th>
+                    <th data-sort="defensive_points" class="sortable">Defcon Points</th>
                     <th data-sort="bonus" class="sortable">Bonus</th>
                     <th data-sort="yellow_cards" class="sortable">Yellow Cards</th>
                     <th data-sort="red_cards" class="sortable">Red Cards</th>`;
@@ -696,7 +698,8 @@ class FPLStatHub {
                     <th data-sort="goals_scored" class="sortable">Goals</th>
                     <th data-sort="assists" class="sortable">Assists</th>
                     <th data-sort="bonus" class="sortable">Bonus</th>
-                    <th data-sort="defensive_contribution" class="sortable">Def Contrib</th>
+                    <th data-sort="defensive_contribution" class="sortable">Defcon</th>
+                    <th data-sort="defensive_points" class="sortable">Defcon Points</th>
                     <th data-sort="yellow_cards" class="sortable">Yellow Cards</th>
                     <th data-sort="red_cards" class="sortable">Red Cards</th>`;
                 break;
@@ -750,6 +753,7 @@ class FPLStatHub {
                         <td>${player.recoveries?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.tackles?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.defensive_contribution?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.defensive_points?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.yellow_cards?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.red_cards?.toFixed(2) ?? '0.0'}</td>
@@ -770,6 +774,7 @@ class FPLStatHub {
                         <td>${player.recoveries?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.tackles?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.defensive_contribution?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.defensive_points?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.yellow_cards?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.red_cards?.toFixed(2) ?? '0.0'}</td>
@@ -785,6 +790,7 @@ class FPLStatHub {
                         <td>${player.assists?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.bonus?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.defensive_contribution?.toFixed(2) ?? '0.0'}</td>
+                        <td>${player.defensive_points?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.yellow_cards?.toFixed(2) ?? '0.0'}</td>
                         <td>${player.red_cards?.toFixed(2) ?? '0.0'}</td>
                     </tr>`;
