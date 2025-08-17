@@ -65,19 +65,19 @@ class FPLStatHub {
     }
 
     async loadAllData() {
-        // Team data files (6 files) - FIXED: Consistent naming
+        // Team data files (6 files)
         const teamDataFiles = {
             all: 'team_all_matches.csv',
             last5: 'team_last5_matches.csv',
             home: 'team_all_home_matches.csv',
-            last5_home: 'team_last5_home_matches.csv',
+            home_last5: 'team_last5_home_matches.csv',
             away: 'team_all_away_matches.csv',
-            last5_away: 'team_last5_away_matches.csv'
+            away_last5: 'team_last5_away_matches.csv'
         };
 
         // Player data files (24 files = 4 positions × 6 scenarios)
         const positions = ['goalkeepers', 'defenders', 'midfielders', 'attackers'];
-        const scenarios = ['all', 'last5', 'home', 'last5_home', 'away', 'last5_away'];
+        const scenarios = ['all', 'last5', 'home', 'home_last5', 'away', 'away_last5'];
         
         const playerDataFiles = {};
         positions.forEach(position => {
@@ -90,7 +90,7 @@ class FPLStatHub {
         try {
             console.log('Loading all data from folder:', this.dataFolder);
             
-            // Load team data with better error handling
+            // Load team data
             console.log('Loading team data...');
             const teamLoadPromises = Object.entries(teamDataFiles).map(async ([key, filename]) => {
                 const filepath = `${this.dataFolder}${filename}`;
@@ -99,25 +99,13 @@ class FPLStatHub {
                 try {
                     const response = await fetch(filepath);
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status} for ${filepath}`);
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const csvText = await response.text();
-                    
-                    // FIXED: Better validation
-                    if (!csvText || csvText.trim() === '') {
-                        throw new Error(`Empty file: ${filepath}`);
-                    }
-                    
                     this.teamData[key] = this.parseCSV(csvText);
-                    console.log(`✅ Successfully loaded team ${key} data:`, this.teamData[key].length, 'teams');
-                    
-                    // Log sample data for debugging
-                    if (this.teamData[key].length > 0) {
-                        console.log(`Sample ${key} data:`, this.teamData[key][0]);
-                    }
-                    
+                    console.log(`Successfully loaded team ${key} data:`, this.teamData[key].length, 'teams');
                 } catch (error) {
-                    console.error(`❌ Error loading team ${key} data from ${filepath}:`, error);
+                    console.error(`Error loading team ${key} data from ${filepath}:`, error);
                     this.teamData[key] = [];
                 }
             });
@@ -139,19 +127,14 @@ class FPLStatHub {
                         try {
                             const response = await fetch(filepath);
                             if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status} for ${filepath}`);
+                                throw new Error(`HTTP error! status: ${response.status}`);
                             }
                             const csvText = await response.text();
-                            
-                            if (!csvText || csvText.trim() === '') {
-                                throw new Error(`Empty file: ${filepath}`);
-                            }
-                            
                             this.playerData[position][scenario] = this.parseCSV(csvText);
-                            console.log(`✅ Successfully loaded ${position} ${scenario} data:`, 
+                            console.log(`Successfully loaded ${position} ${scenario} data:`, 
                                        this.playerData[position][scenario].length, 'players');
                         } catch (error) {
-                            console.error(`❌ Error loading ${position} ${scenario} data from ${filepath}:`, error);
+                            console.error(`Error loading ${position} ${scenario} data from ${filepath}:`, error);
                             this.playerData[position][scenario] = [];
                         }
                     })();
@@ -163,18 +146,15 @@ class FPLStatHub {
             // Wait for all data to load
             await Promise.all([...teamLoadPromises, ...playerLoadPromises]);
             
-            console.log('🎉 All data loading completed');
-            console.log('Team data summary:', Object.keys(this.teamData).map(key => ({
-                [key]: this.teamData[key] ? this.teamData[key].length : 0
-            })));
-            console.log('Player data summary:', Object.keys(this.playerData));
+            console.log('All data loaded successfully');
+            console.log('Team data keys:', Object.keys(this.teamData));
+            console.log('Player data structure:', Object.keys(this.playerData));
             
         } catch (error) {
-            console.error('💥 Fatal error in loadAllData:', error);
+            console.error('Error in loadAllData:', error);
         }
     }
 
-    // FIXED: Better CSV parsing with validation
     parseCSV(csvText) {
         if (!csvText || csvText.trim() === '') {
             console.warn('Empty CSV data received');
@@ -183,25 +163,20 @@ class FPLStatHub {
         
         const lines = csvText.trim().split('\n');
         if (lines.length < 2) {
-            console.warn('CSV has insufficient data (less than 2 lines)');
+            console.warn('CSV has insufficient data');
             return [];
         }
         
-        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-        console.log('CSV headers found:', headers);
+        const headers = lines[0].split(',').map(h => h.trim());
+        console.log('CSV headers:', headers);
         
-        const rows = lines.slice(1).map((line, index) => {
-            // FIXED: Better CSV parsing for quoted values
-            const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
-            const cleanValues = values.map(v => v.trim().replace(/"/g, ''));
-            
+        return lines.slice(1).map((line, index) => {
+            const values = line.split(',').map(v => v.trim());
             const row = {};
             
             headers.forEach((header, headerIndex) => {
-                const value = cleanValues[headerIndex] || '';
-                
-                // FIXED: Better number detection
-                if (value !== '' && value !== 'N/A' && value !== 'null' && !isNaN(Number(value))) {
+                const value = values[headerIndex] || '';
+                if (!isNaN(value) && value !== '' && value !== 'N/A') {
                     row[header] = parseFloat(value);
                 } else {
                     row[header] = value;
@@ -210,18 +185,12 @@ class FPLStatHub {
             
             return row;
         }).filter(row => {
-            // FIXED: Better filtering logic
-            // For team data, check for team name
-            if (row.team && row.team.trim() !== '' && row.team !== 'N/A') return true;
-            // For player data, check for player names
-            if ((row.first_name && row.first_name.trim() !== '') || 
-                (row.second_name && row.second_name.trim() !== '')) return true;
-            
+            // For team data, filter by team name
+            if (row.team && row.team !== '') return true;
+            // For player data, filter by player name
+            if (row.first_name || row.second_name) return true;
             return false;
         });
-
-        console.log(`Parsed ${rows.length} valid rows from CSV`);
-        return rows;
     }
 
     setupEventListeners() {
