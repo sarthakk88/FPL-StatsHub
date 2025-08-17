@@ -22,6 +22,7 @@
             <!-- <button class="main-tab active" data-tab="my-team">My Team</button> -->
             <button class="main-tab active" data-tab="players">Players</button>
             <button class="main-tab" data-tab="team-stats">Team Stats</button>
+            <button class="main-tab" data-tab="predicted-points">Predicted Points</button>
         </nav>
 
         <div class="tab-container">
@@ -253,7 +254,49 @@
                     </div>
                 </div>
             </div>
+            <div class="tab-content" id="predicted-points">
+                <div class="controls">
+                    <div class="control-row">
+                        <div class="search-box">
+                            <input type="text" id="player-search" placeholder="Search players..." class="form-control">
+                        </div>
+                        <div class="team-filter">
+                            <select id="team-filter" class="form-control">
+                                <option value="">All Teams</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <div class="position-filters">
+                            <button class="position-btn active" data-position="">All</button>
+                            <button class="position-btn gk" data-position="GK">GK</button>
+                            <button class="position-btn d" data-position="D">D</button>
+                            <button class="position-btn m" data-position="M">M</button>
+                            <button class="position-btn f" data-position="F">F</button>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="stats-summary">
+                    <span id="results-count">Loading players...</span>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr id="table-header-row">
+                                </tr>
+                            </thead>
+                            <tbody id="players-table">
+                                <tr>
+                                    <td colspan="19" class="loading">Loading data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
