@@ -65,7 +65,7 @@ class FPLStatHub {
     }
 
     async loadAllData() {
-        // Team data files (6 files)
+        // Team data files (6 files) - FIXED: Consistent naming
         const teamDataFiles = {
             all: 'team_all_matches.csv',
             last5: 'team_last5_matches.csv',
@@ -90,7 +90,7 @@ class FPLStatHub {
         try {
             console.log('Loading all data from folder:', this.dataFolder);
             
-            // Load team data
+            // Load team data with better error handling
             console.log('Loading team data...');
             const teamLoadPromises = Object.entries(teamDataFiles).map(async ([key, filename]) => {
                 const filepath = `${this.dataFolder}${filename}`;
@@ -99,13 +99,25 @@ class FPLStatHub {
                 try {
                     const response = await fetch(filepath);
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error(`HTTP error! status: ${response.status} for ${filepath}`);
                     }
                     const csvText = await response.text();
+                    
+                    // FIXED: Better validation
+                    if (!csvText || csvText.trim() === '') {
+                        throw new Error(`Empty file: ${filepath}`);
+                    }
+                    
                     this.teamData[key] = this.parseCSV(csvText);
-                    console.log(`Successfully loaded team ${key} data:`, this.teamData[key].length, 'teams');
+                    console.log(`✅ Successfully loaded team ${key} data:`, this.teamData[key].length, 'teams');
+                    
+                    // Log sample data for debugging
+                    if (this.teamData[key].length > 0) {
+                        console.log(`Sample ${key} data:`, this.teamData[key][0]);
+                    }
+                    
                 } catch (error) {
-                    console.error(`Error loading team ${key} data from ${filepath}:`, error);
+                    console.error(`❌ Error loading team ${key} data from ${filepath}:`, error);
                     this.teamData[key] = [];
                 }
             });
@@ -127,14 +139,19 @@ class FPLStatHub {
                         try {
                             const response = await fetch(filepath);
                             if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
+                                throw new Error(`HTTP error! status: ${response.status} for ${filepath}`);
                             }
                             const csvText = await response.text();
+                            
+                            if (!csvText || csvText.trim() === '') {
+                                throw new Error(`Empty file: ${filepath}`);
+                            }
+                            
                             this.playerData[position][scenario] = this.parseCSV(csvText);
-                            console.log(`Successfully loaded ${position} ${scenario} data:`, 
+                            console.log(`✅ Successfully loaded ${position} ${scenario} data:`, 
                                        this.playerData[position][scenario].length, 'players');
                         } catch (error) {
-                            console.error(`Error loading ${position} ${scenario} data from ${filepath}:`, error);
+                            console.error(`❌ Error loading ${position} ${scenario} data from ${filepath}:`, error);
                             this.playerData[position][scenario] = [];
                         }
                     })();
@@ -146,15 +163,18 @@ class FPLStatHub {
             // Wait for all data to load
             await Promise.all([...teamLoadPromises, ...playerLoadPromises]);
             
-            console.log('All data loaded successfully');
-            console.log('Team data keys:', Object.keys(this.teamData));
-            console.log('Player data structure:', Object.keys(this.playerData));
+            console.log('🎉 All data loading completed');
+            console.log('Team data summary:', Object.keys(this.teamData).map(key => ({
+                [key]: this.teamData[key] ? this.teamData[key].length : 0
+            })));
+            console.log('Player data summary:', Object.keys(this.playerData));
             
         } catch (error) {
-            console.error('Error in loadAllData:', error);
+            console.error('💥 Fatal error in loadAllData:', error);
         }
     }
 
+    // FIXED: Better CSV parsing with validation
     parseCSV(csvText) {
         if (!csvText || csvText.trim() === '') {
             console.warn('Empty CSV data received');
@@ -163,20 +183,25 @@ class FPLStatHub {
         
         const lines = csvText.trim().split('\n');
         if (lines.length < 2) {
-            console.warn('CSV has insufficient data');
+            console.warn('CSV has insufficient data (less than 2 lines)');
             return [];
         }
         
-        const headers = lines[0].split(',').map(h => h.trim());
-        console.log('CSV headers:', headers);
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        console.log('CSV headers found:', headers);
         
-        return lines.slice(1).map((line, index) => {
-            const values = line.split(',').map(v => v.trim());
+        const rows = lines.slice(1).map((line, index) => {
+            // FIXED: Better CSV parsing for quoted values
+            const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
+            const cleanValues = values.map(v => v.trim().replace(/"/g, ''));
+            
             const row = {};
             
             headers.forEach((header, headerIndex) => {
-                const value = values[headerIndex] || '';
-                if (!isNaN(value) && value !== '' && value !== 'N/A') {
+                const value = cleanValues[headerIndex] || '';
+                
+                // FIXED: Better number detection
+                if (value !== '' && value !== 'N/A' && value !== 'null' && !isNaN(Number(value))) {
                     row[header] = parseFloat(value);
                 } else {
                     row[header] = value;
@@ -185,12 +210,18 @@ class FPLStatHub {
             
             return row;
         }).filter(row => {
-            // For team data, filter by team name
-            if (row.team && row.team !== '') return true;
-            // For player data, filter by player name
-            if (row.first_name || row.second_name) return true;
+            // FIXED: Better filtering logic
+            // For team data, check for team name
+            if (row.team && row.team.trim() !== '' && row.team !== 'N/A') return true;
+            // For player data, check for player names
+            if ((row.first_name && row.first_name.trim() !== '') || 
+                (row.second_name && row.second_name.trim() !== '')) return true;
+            
             return false;
         });
+
+        console.log(`Parsed ${rows.length} valid rows from CSV`);
+        return rows;
     }
 
     setupEventListeners() {
@@ -201,11 +232,30 @@ class FPLStatHub {
             });
         });
 
-        // Load team button
-        const loadTeamBtn = document.getElementById('loadTeamBtn');
-        if (loadTeamBtn) {
-            loadTeamBtn.addEventListener('click', () => {
-                this.loadMyTeamData();
+        // Team stats view filter - FIXED: Better handling
+        const statsViewFilter = document.getElementById('statsViewFilter');
+        if (statsViewFilter) {
+            statsViewFilter.addEventListener('change', (e) => {
+                const newView = e.target.value;
+                console.log('Stats view filter changed from', this.currentView, 'to', newView);
+                this.currentView = newView;
+                this.sortState = { column: 'pts', direction: 'desc' }; // Reset sort
+                this.updateTableTitle();
+                this.renderTeamStats();
+            });
+        }
+
+        // Player view filter 
+        const playerViewFilter = document.getElementById('viewFilter');
+        if (playerViewFilter) {
+            playerViewFilter.addEventListener('change', (e) => {
+                const newView = e.target.value;
+                console.log('Player view filter changed from', this.selectedView, 'to', newView);
+                this.selectedView = newView;
+                this.sortState = { column: 'xPoints', direction: 'desc' }; // Reset sort
+                if (this.currentMainTab === 'players') {
+                    this.renderPlayersContent();
+                }
             });
         }
 
@@ -223,40 +273,30 @@ class FPLStatHub {
             }
         });
 
-        // Team stats view filter
-        const statsViewFilter = document.getElementById('statsViewFilter');
-        if (statsViewFilter) {
-            statsViewFilter.addEventListener('change', (e) => {
-                this.currentView = e.target.value;
-                console.log('Stats view changed to:', this.currentView);
-                this.updateTableTitle();
-                this.renderTeamStats();
+        // Load team button
+        const loadTeamBtn = document.getElementById('loadTeamBtn');
+        if (loadTeamBtn) {
+            loadTeamBtn.addEventListener('click', () => {
+                this.loadMyTeamData();
             });
         }
-
-        // Player view filter 
-        const playerViewFilter = document.getElementById('viewFilter');
-        if (playerViewFilter) {
-            playerViewFilter.addEventListener('change', (e) => {
-                this.selectedView = e.target.value;
-                console.log('Player view changed to:', this.selectedView);
-                if (this.currentMainTab === 'players') {
-                    this.renderPlayersContent();
-                }
-            });
-        }
-
-        // Sort listeners for table headers
-        this.setupSortListeners();
     }
 
     getCurrentData() {
+        console.log('getCurrentData called with currentView:', this.currentView);
+        console.log('Available team data keys:', Object.keys(this.teamData));
+        console.log('Team data for current view:', this.teamData[this.currentView] ? this.teamData[this.currentView].length : 'null');
+        
         const data = this.teamData[this.currentView];
         if (!data || data.length === 0) {
-            console.warn(`No data available for view: ${this.currentView}`);
+            console.warn(`⚠️ No data available for view: ${this.currentView}`);
+            console.warn('Available views with data:', Object.keys(this.teamData).filter(key => 
+                this.teamData[key] && this.teamData[key].length > 0
+            ));
             return [];
         }
-        console.log(`Using ${this.currentView} data:`, data.length, 'teams');
+        
+        console.log(`✅ Using ${this.currentView} data:`, data.length, 'teams');
         return data;
     }
 
@@ -283,16 +323,16 @@ class FPLStatHub {
     }
 
 
-    setupSortListeners() {
-        document.addEventListener('click', (e) => {
-            const sortableHeader = e.target.closest('.sortable');
-            if (sortableHeader) {
-                const column = sortableHeader.getAttribute('data-sort');
-                const type = sortableHeader.getAttribute('data-type');
-                this.handleSort(column, type);
-            }
-        });
-    }
+    // setupSortListeners() {
+    //     document.addEventListener('click', (e) => {
+    //         const sortableHeader = e.target.closest('.sortable');
+    //         if (sortableHeader) {
+    //             const column = sortableHeader.getAttribute('data-sort');
+    //             const type = sortableHeader.getAttribute('data-type');
+    //             this.handleSort(column, type);
+    //         }
+    //     });
+    // }
 
     handleSort(column, type) {
         // Toggle direction if same column, otherwise set to desc for numbers, asc for strings
@@ -323,23 +363,25 @@ class FPLStatHub {
     }
 
     sortData(data) {
+        if (!data || data.length === 0) return [];
+        
         return [...data].sort((a, b) => {
             let aValue = a[this.sortState.column];
             let bValue = b[this.sortState.column];
 
-            // Handle position sorting specially
+            // Handle special cases
             if (this.sortState.column === 'position') {
                 // Calculate position based on points if not available
-                const aPos = data.findIndex(team => team.team === a.team) + 1;
-                const bPos = data.findIndex(team => team.team === b.team) + 1;
-                aValue = aPos;
-                bValue = bPos;
+                const pointsSortedData = [...data].sort((x, y) => (y.pts || 0) - (x.pts || 0));
+                aValue = pointsSortedData.findIndex(team => team.team === a.team) + 1;
+                bValue = pointsSortedData.findIndex(team => team.team === b.team) + 1;
             }
 
             // Handle string comparison
-            if (typeof aValue === 'string') {
-                aValue = aValue.toLowerCase();
-                bValue = (bValue || '').toLowerCase();
+            if (typeof aValue === 'string' || typeof bValue === 'string') {
+                aValue = String(aValue || '').toLowerCase();
+                bValue = String(bValue || '').toLowerCase();
+                
                 if (this.sortState.direction === 'asc') {
                     return aValue.localeCompare(bValue);
                 } else {
@@ -888,18 +930,6 @@ class FPLStatHub {
     });
     }
 
-    getViewDisplayName() {
-        const displayNames = {
-            all: 'All Fixtures',
-            last5: 'Last 5 Fixtures',
-            home: 'Home Only',
-            last5_home: 'Last 5 Home',
-            away: 'Away Only',
-            last5_away: 'Last 5 Away'
-        };
-        return displayNames[this.currentView] || this.currentView;
-    }
-
     getLeaguePositionClass(position) {
         if (position <= 4) return 'champions-league';
         if (position <= 6) return 'europa-league';
@@ -914,12 +944,17 @@ class FPLStatHub {
     }
 
     sortTable(column) {
-        if (this.currentSort.column === column) {
-            this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
+        console.log('sortTable called with column:', column);
+        
+        // Toggle direction if same column, otherwise default to desc
+        if (this.sortState.column === column) {
+            this.sortState.direction = this.sortState.direction === 'asc' ? 'desc' : 'asc';
         } else {
-            this.currentSort.column = column;
-            this.currentSort.direction = 'desc';
+            this.sortState.column = column;
+            this.sortState.direction = 'desc';
         }
+
+        console.log('Sort state updated:', this.sortState);
 
         // Update sort indicators
         document.querySelectorAll('[data-sort]').forEach(th => {
@@ -928,9 +963,11 @@ class FPLStatHub {
         
         const currentTh = document.querySelector(`[data-sort="${column}"]`);
         if (currentTh) {
-            currentTh.classList.add(`sort-${this.currentSort.direction}`);
+            currentTh.classList.add(`sort-${this.sortState.direction}`);
+            console.log('Updated sort indicator for:', column);
         }
 
+        // Re-render appropriate content
         if (this.currentMainTab === 'players') {
             this.renderPlayersContent();
         } else if (this.currentMainTab === 'team-stats') {
