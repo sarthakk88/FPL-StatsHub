@@ -1,2 +1,7 @@
 first_name,second_name,form,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves
-Alisson,Becker,1.0,Newcastle,Away,90.0,0.0,0.01,1.63,2.03,1.0,0.0,0.0,0.0,2.0,0.0,1.0
+Marco,Bizot,7.0,Brentford,Away,90.0,0.0,0.0,1.43,3.0,7.0,0.0,0.0,1.0,0.0,0.0,3.0
+Bart,Verbruggen,2.0,Everton,Away,90.0,0.0,0.0,0.69,3.24,2.0,0.0,0.0,0.0,1.0,0.0,1.0
+Alisson,Becker,1.0,Newcastle,Away,90.0,0.0,0.01,1.7,2.03,1.0,0.0,0.0,0.0,2.0,0.0,1.0
+Robin,Roefs,8.0,Burnley,Away,90.0,0.0,0.0,0.61,5.5600000000000005,8.0,0.0,0.0,1.0,0.0,1.0,4.0
+Guglielmo,Vicario,9.0,Man City,Away,90.0,0.0,0.0,0.94,5.24,9.0,0.0,0.0,1.0,0.0,2.0,4.0
+José,Malheiro de Sá,0.0,Bournemouth,Away,90.0,0.0,0.0,2.44,2.0,0.0,0.0,0.0,0.0,4.0,0.0,0.0

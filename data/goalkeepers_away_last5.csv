@@ -1,2 +1,7 @@
 first_name,second_name,form,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves
-Đorđe,Petrović,2.0,Wolves,Home,90.0,0.0,0.0,2.15,4.0,2.0,0.0,0.0,0.0,4.0,0.0,6.0
+Martin,Dúbravka,2.0,Sunderland,Home,90.0,0.0,0.0,2.32,3.0,2.0,0.0,0.0,0.0,3.0,0.0,3.0
+Đorđe,Petrović,2.0,Wolves,Home,90.0,0.0,0.0,2.21,4.0,2.0,0.0,0.0,0.0,4.0,0.0,6.0
+Bernd,Leno,3.0,Man Utd,Home,90.0,0.0,0.0,1.54,3.0,3.0,0.0,0.0,0.0,1.0,0.0,3.0
+James,Trafford,7.0,Spurs,Home,90.0,0.0,0.0,0.49,5.04,7.0,0.0,0.0,1.0,0.0,0.0,3.0
+Nick,Pope,9.0,Liverpool,Home,90.0,0.0,0.0,0.2,8.2,9.0,0.0,0.0,1.0,0.0,2.0,3.0
+Mads,Hermansen,1.0,Chelsea,Home,90.0,0.0,0.01,0.7,3.23,1.0,0.0,0.0,0.0,3.0,0.0,2.0
