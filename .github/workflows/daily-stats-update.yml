@@ -1,10 +1,9 @@
 name: Daily FPL Stats Update
-
 on:
   schedule:
     # Runs daily at 6:00 AM IST (00:30 UTC)
     - cron: '30 0 * * *'
-  workflow_dispatch: # Allow manual runs
+  workflow_dispatch: # Manual trigger
 
 permissions:
   contents: write
@@ -12,42 +11,42 @@ permissions:
 jobs:
   update-stats:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run stats update script
-        run: python update_stats.py
-        env:
-          TZ: Asia/Kolkata
-
-      - name: Check for changes
-        id: changes
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Commit and push if there are changes
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add data/*.csv
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run stats update
+      run: python update_stats.py
+      env:
+        TZ: 'Asia/Kolkata'
+        
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        # Add only CSV files in data directory
+        git add data/*.csv 2>/dev/null || true
+        
+        # Check if there are any staged changes
+        if [ -n "$(git diff --cached --name-only)" ]; then
+          echo "Changes detected in CSV files, committing..."
           git commit -m "Daily stats update: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
           git push
+          echo "✅ Changes committed and pushed successfully"
+        else
+          echo "ℹ️ No CSV file changes to commit"
+        fi
