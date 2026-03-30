@@ -1,6 +1,6 @@
 first_name,second_name,form,team_against,Home_Away,minutes,xG,xA,xGC,xPoints,total_points,goals_scored,assists,clean_sheets,goals_conceded,bonus,saves,defensive_points,clearances_blocks_interceptions,recoveries,tackles,defensive_contribution,own_goals,penalties_saved,penalties_missed,yellow_cards,red_cards
 David,Raya Martín,5.7,Bournemouth,Home,450.0,0.0,0.004,0.6719999999999999,4.004,4.8,0.0,0.0,0.6,0.8,0.2,1.8,0.0,1.4,7.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-Emiliano,Martínez Romero,2.5,Nott'm Forest,Away,450.0,0.0,0.004,1.3539999999999999,3.556,4.0,0.0,0.0,0.4,1.2,0.4,2.2,0.0,1.6,9.2,0.0,0.0,0.0,0.0,0.0,0.2,0.0
+Emiliano,Martínez Romero,3.0,Nott'm Forest,Away,450.0,0.0,0.004,1.3539999999999999,3.556,4.0,0.0,0.0,0.4,1.2,0.4,2.2,0.0,1.6,9.2,0.0,0.0,0.0,0.0,0.0,0.2,0.0
 Marco,Bizot,0.0,Nott'm Forest,Away,180.0,0.0,0.0,2.05,1.5,3.5,0.0,0.0,0.5,1.5,0.0,2.0,0.0,2.0,9.5,0.0,0.0,0.0,0.0,0.0,0.5,0.0
 Martin,Dúbravka,2.5,Brighton,Home,450.0,0.0,0.002,2.0839999999999996,2.4059999999999997,3.0,0.0,0.0,0.2,2.0,0.2,4.2,0.0,1.6,9.2,0.2,0.0,0.0,0.0,0.0,0.0,0.0
 Đorđe,Petrović,4.2,Arsenal,Away,450.0,0.0,0.0,0.992,3.5840000000000005,3.0,0.0,0.0,0.2,1.2,0.0,2.8,0.0,1.2,8.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0
@@ -30,4 +30,4 @@ Guglielmo,Vicario,1.8,Sunderland,Away,450.0,0.0,0.0,1.9780000000000002,1.8,1.2,0
 Alphonse,Areola,0.0,Wolves,Home,450.0,0.0,0.0,1.456,2.928,2.0,0.0,0.0,0.0,1.8,0.0,3.0,0.0,1.0,6.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0
 Mads,Hermansen,3.5,Wolves,Home,450.0,0.0,0.0,1.4560000000000002,3.224,3.2,0.0,0.0,0.2,2.0,0.6,3.2,0.0,1.4,8.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0
 Sam,Johnstone,0.0,West Ham,Away,450.0,0.0,0.002,1.738,2.414,1.8,0.0,0.0,0.0,2.2,0.0,3.4,0.0,2.0,10.4,0.4,0.0,0.0,0.0,0.0,0.0,0.0
-José,Malheiro de Sá,3.7,West Ham,Away,450.0,0.0,0.0,1.904,2.6,3.0,0.0,0.0,0.2,1.6,0.2,3.2,0.0,2.4,10.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+José,Malheiro de Sá,1.5,West Ham,Away,450.0,0.0,0.0,1.904,2.6,3.0,0.0,0.0,0.2,1.6,0.2,3.2,0.0,2.4,10.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0
